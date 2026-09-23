@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventory · Chandni Electronics</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234f46e5'/%3E%3Cpath d='M18 6 8 18h5l-1 8 11-13h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+.goog-te-banner-frame{/* Google Translate banner - keep visible */}.goog-te-banner-frame.skiptranslate{display:none;}
+body{/* body style - Google Translate handles offset */}
+.goog-te-gadget-simple{display:inline-block;}
+.goog-te-menu-frame{font-family:ui-sans-serif,sans-serif!important;}
+</style>
+</head>
+<body data-page="inventory">
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 5-6 4 4"/><path d="M17 6h4v4"/></svg>
+      </span>
+      <span>
+        <div class="brand-name">Chandni Electronics</div>
+        <div class="brand-sub">Inventory · Lajpat Nagar</div>
+      </span>
+    </a>
+    <nav class="nav">
+      <a href="index.html" data-page="dashboard">Dashboard</a>
+      <a href="inventory.html" data-page="inventory">Inventory</a>
+      <a href="reorder.html" data-page="reorder">Reorder<span class="nav-badge"></span></a>
+      <a href="sales.html" data-page="sales">Sales</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="live-chip"><span class="live-dot"></span>Live</span>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Full inventory</h1>
+      <p class="page-sub">Search, filter and manage every SKU on the shelf.</p>
+    </div>
+    <button class="btn btn-dark" id="add-item-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Add item
+    </button>
+  </div>
+
+  <section class="card table-card">
+    <div class="toolbar">
+      <input class="input" type="text" id="search" placeholder="Search items&hellip;" autocomplete="off">
+      <select class="select" id="category"></select>
+      <select class="select" id="sort">
+        <option value="stockout-asc">Sort: soonest to run out</option>
+        <option value="stock-asc">Sort: lowest stock</option>
+        <option value="name-asc">Sort: name (A&ndash;Z)</option>
+        <option value="sales-desc">Sort: fastest selling</option>
+        <option value="value-desc">Sort: stock value</option>
+      </select>
+      <button class="btn btn-ghost btn" id="reset">Reset</button>
+    </div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Stock</th>
+            <th class="hide-md">Avg. daily</th>
+            <th class="hide-md">Days to stockout</th>
+            <th>Status</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span>Demo data &middot; not connected to a real POS</span>
+    <span>Last updated: <span data-live-ts></span></span>
+  </div>
+</footer>
+
+<!-- Add item modal -->
+<div class="modal-backdrop" id="modal-backdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 class="modal-title" id="modal-title">Add inventory item</h2>
+      <button class="modal-x" id="modal-close" aria-label="Close">&times;</button>
+    </div>
+    <form id="add-form" novalidate>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="form-field full">
+            <label for="f-name">Item name</label>
+            <input class="input" id="f-name" required placeholder="e.g. HDMI Cable 2m">
+          </div>
+          <div class="form-field">
+            <label for="f-cat">Category</label>
+            <input class="input" id="f-cat" list="cat-list" required placeholder="e.g. Peripherals">
+            <datalist id="cat-list"></datalist>
+          </div>
+          <div class="form-field">
+            <label for="f-price">Price (&rsaquo;)</label>
+            <input class="input" id="f-price" type="number" min="0" step="1" required placeholder="699">
+          </div>
+          <div class="form-field">
+            <label for="f-stock">Stock on hand</label>
+            <input class="input" id="f-stock" type="number" min="0" step="1" required placeholder="12">
+          </div>
+          <div class="form-field">
+            <label for="f-avg">Avg. daily sales</label>
+            <input class="input" id="f-avg" type="number" min="0" step="0.1" required placeholder="3">
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" id="modal-cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/inventory.js"></script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script><script type="text/javascript">function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: "en",includedLanguages: "zh-CN,en",layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, "google_translate_element");}</script>
+<div id="google_translate_element"></div>
+<script>(function(){function applyTranslation(){var saved=localStorage.getItem("lang_pref");if(saved==="zh"){var sel=document.querySelector(".goog-te-combo");if(sel){sel.value="zh-CN";var e=new Event("change");sel.dispatchEvent(e);}}}function adjustForTranslateBanner(){var banner=document.querySelector(".goog-te-banner-frame");var header=document.querySelector("header");var dd=document.getElementById("google_translate_element");var bannerH=banner&&banner.offsetHeight>0?banner.offsetHeight:0;if(header){header.style.position="sticky";header.style.top=bannerH+"px";}if(dd){dd.style.top=(62+bannerH)+"px";}if(document.body){document.body.style.marginTop=bannerH+"px";}}var observer=new MutationObserver(function(){adjustForTranslateBanner();});observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class"]});window.addEventListener("resize",adjustForTranslateBanner);setTimeout(function(){adjustForTranslateBanner();applyTranslation();},500);setInterval(adjustForTranslateBanner,2000);})();</script></body>
+</html>

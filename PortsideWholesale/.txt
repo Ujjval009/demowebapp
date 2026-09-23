@@ -1,0 +1,2 @@
+cd /home/arise/projects/PortsideWholesale
+npm run dev

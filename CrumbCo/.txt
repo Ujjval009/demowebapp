@@ -1,0 +1,3 @@
+cd "/home/arise/projects/Crumb & Co. /crumb-demo"
+pnpm dev
+pnpm build:single

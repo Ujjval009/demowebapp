@@ -1,0 +1,2 @@
+cd /home/arise/projects/HMS/wardline
+npm run dev

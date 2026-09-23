@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in · Fernway POS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/login.css">
+<style>
+.goog-te-banner-frame{/* Google Translate banner - keep visible */}.goog-te-banner-frame.skiptranslate{display:none;}
+body{/* body style - Google Translate handles offset */}
+.goog-te-gadget-simple{display:inline-block;}
+.goog-te-menu-frame{font-family:ui-sans-serif,sans-serif!important;}
+</style>
+</head>
+<body>
+
+<div class="login-page">
+
+  <div class="login-brand">
+    <div class="brand-big">
+      <div class="mark">C</div>
+      <span>Fernway Supply Co.</span>
+    </div>
+
+    <div>
+      <h2>The all-in-one point of sale for your shop.</h2>
+      <p>Ring up sales, manage inventory, track customers, and review reports — all from one clean, fast dashboard.</p>
+      <ul>
+        <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span> Lightning-fast billing &amp; checkout</li>
+        <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span> Inventory and stock tracking</li>
+        <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span> Customer profiles &amp; purchase history</li>
+        <li><span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></span> Sales reports and analytics</li>
+      </ul>
+    </div>
+
+    <div class="small">© 2026 Fernway Supply Co.</div>
+  </div>
+
+  <div class="login-form-wrap">
+    <div class="login-card">
+      <h1>Welcome back</h1>
+      <div class="login-sub">Sign in to the Fernway point of sale demo.</div>
+
+      <div class="form-error" id="loginError">Invalid email or password. Please try again.</div>
+
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" autocomplete="username" placeholder="you@fernway.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+        </div>
+
+        <div class="remember-row">
+          <label><input type="checkbox" checked> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="login-btn" id="loginBtn">Sign in</button>
+      </form>
+
+      <div class="login-hint">
+        <strong>Demo credentials</strong><br>
+        Email: <code>admin@fernway.com</code> · Password: <code>admin123</code>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  (function(){
+    if (Auth.isAuthenticated()){ window.location.replace("app.html"); return; }
+
+    const form = document.getElementById("loginForm");
+    const btn = document.getElementById("loginBtn");
+    const error = document.getElementById("loginError");
+
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      const ok = Auth.login(
+        document.getElementById("email").value,
+        document.getElementById("password").value
+      );
+      if (ok){
+        window.location.href = "app.html";
+      } else {
+        error.classList.add("show");
+      }
+    });
+  })();
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script><script type="text/javascript">function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: "en",includedLanguages: "zh-CN,en",layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, "google_translate_element");}</script>
+<div id="google_translate_element"></div>
+<script>(function(){function applyTranslation(){var saved=localStorage.getItem("lang_pref");if(saved==="zh"){var sel=document.querySelector(".goog-te-combo");if(sel){sel.value="zh-CN";var e=new Event("change");sel.dispatchEvent(e);}}}function adjustForTranslateBanner(){var banner=document.querySelector(".goog-te-banner-frame");var header=document.querySelector("header");var dd=document.getElementById("google_translate_element");var bannerH=banner&&banner.offsetHeight>0?banner.offsetHeight:0;if(header){header.style.position="sticky";header.style.top=bannerH+"px";}if(dd){dd.style.top=(62+bannerH)+"px";}if(document.body){document.body.style.marginTop=bannerH+"px";}}var observer=new MutationObserver(function(){adjustForTranslateBanner();});observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class"]});window.addEventListener("resize",adjustForTranslateBanner);setTimeout(function(){adjustForTranslateBanner();applyTranslation();},500);setInterval(adjustForTranslateBanner,2000);})();</script></body>
+</html>

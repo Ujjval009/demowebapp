@@ -1,0 +1,17 @@
+export const initialMeds = [
+  { name: "Amoxicillin 500mg", category: "Antibiotic", stock: 420, threshold: 150, unit: "capsules", price: 12 },
+  { name: "Paracetamol 650mg", category: "Analgesic", stock: 80, threshold: 200, unit: "tablets", price: 5 },
+  { name: "Insulin glargine", category: "Hormone", stock: 34, threshold: 40, unit: "vials", price: 450 },
+  { name: "Salbutamol inhaler", category: "Respiratory", stock: 56, threshold: 30, unit: "units", price: 320 },
+  { name: "Normal saline 500ml", category: "IV fluid", stock: 210, threshold: 100, unit: "bottles", price: 45 },
+  { name: "Atorvastatin 20mg", category: "Statin", stock: 18, threshold: 50, unit: "tablets", price: 35 },
+  { name: "Metformin 500mg", category: "Antidiabetic", stock: 350, threshold: 100, unit: "tablets", price: 8 },
+  { name: "Omeprazole 20mg", category: "Proton Pump Inhibitor", stock: 280, threshold: 80, unit: "capsules", price: 15 },
+  { name: "Amlodipine 5mg", category: "Antihypertensive", stock: 45, threshold: 60, unit: "tablets", price: 10 },
+  { name: "Pantoprazole 40mg IV", category: "Proton Pump Inhibitor", stock: 92, threshold: 50, unit: "vials", price: 85 },
+  { name: "Ceftriaxone 1g", category: "Antibiotic", stock: 120, threshold: 80, unit: "vials", price: 65 },
+  { name: "Dexamethasone 4mg", category: "Corticosteroid", stock: 15, threshold: 30, unit: "tablets", price: 22 },
+  { name: "Ringer Lactate 500ml", category: "IV fluid", stock: 180, threshold: 100, unit: "bottles", price: 40 },
+  { name: "Enoxaparin 40mg", category: "Anticoagulant", stock: 28, threshold: 25, unit: "syringes", price: 180 },
+  { name: "Morphine 10mg/ml", category: "Opioid Analgesic", stock: 12, threshold: 20, unit: "ampoules", price: 95 },
+];

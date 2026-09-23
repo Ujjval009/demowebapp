@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>.goog-te-banner-frame{position:fixed!important;top:0!important;left:0!important;width:100%!important;z-index:2147483647!important;}.goog-te-banner-frame.skiptranslate{display:none!important;}.goog-te-menu-frame{font-family:ui-sans-serif,sans-serif!important;}body{transition:margin-top .3s ease;}</style>
+
+
+<div class="sid-root">
+
+  <div class="sid-letterhead">
+    <div class="sid-brand-row">
+      <div>
+        <p class="sid-store-name">Chandni Electronics</p>
+        <p class="sid-store-sub">Inventory ledger &middot; Lajpat Nagar branch</p>
+      </div>
+      <div class="sid-status"><span class="sid-dot"></span> Live &middot; auto-updating</div>
+    </div>
+  </div>
+
+  <div class="sid-stats">
+    <div class="sid-stat">
+      <p class="sid-stat-label">Stock value on hand</p>
+      <p class="sid-stat-value" id="sid-stat-value">&#8377;0</p>
+      <p class="sid-stat-sub" id="sid-stat-value-sub">across 0 SKUs</p>
+    </div>
+    <div class="sid-stat">
+      <p class="sid-stat-label">Items needing reorder</p>
+      <p class="sid-stat-value sid-danger" id="sid-stat-low">0</p>
+      <p class="sid-stat-sub">critical + low stock</p>
+    </div>
+    <div class="sid-stat">
+      <p class="sid-stat-label">Sales today</p>
+      <p class="sid-stat-value" id="sid-stat-sales">&#8377;0</p>
+      <p class="sid-stat-sub" id="sid-stat-sales-sub">0 units sold</p>
+    </div>
+  </div>
+
+  <div class="sid-section">
+    <p class="sid-section-title">Reorder needed</p>
+    <p class="sid-section-desc">Ranked by how soon each item runs out, based on the last 14 days of sales.</p>
+    <div id="sid-alerts"></div>
+  </div>
+
+  <div class="sid-section">
+    <p class="sid-section-title">Full inventory</p>
+    <p class="sid-section-desc">Search, filter, or click a column to sort. "+10" simulates a delivery arriving.</p>
+    <div class="sid-controls">
+      <input type="text" id="sid-search" placeholder="Search items&hellip;">
+      <select id="sid-category">
+        <option value="all">All categories</option>
+      </select>
+      <select id="sid-sort">
+        <option value="stockout-asc">Sort: soonest to run out</option>
+        <option value="stock-asc">Sort: lowest stock</option>
+        <option value="name-asc">Sort: name (A&ndash;Z)</option>
+        <option value="sales-desc">Sort: fastest selling</option>
+      </select>
+    </div>
+    <div class="sid-table-wrap">
+      <table class="sid-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Stock</th>
+            <th>Avg. daily sales</th>
+            <th>Days to stockout</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="sid-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sid-footer">
+    <span>Demo data &middot; not connected to a real POS</span>
+    <span id="sid-updated"></span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  const products = [
+    { name:"Wireless Mouse",            cat:"Peripherals",        price:699,  stock:7,  avgSales:4, soldToday:5 },
+    { name:"USB-C Cable 1m",            cat:"Cables & Chargers",  price:299,  stock:5,  avgSales:6, soldToday:6 },
+    { name:"HDMI Cable 2m",             cat:"Cables & Chargers",  price:449,  stock:3,  avgSales:2, soldToday:1 },
+    { name:"Screen Protector Universal",cat:"Mobile Accessories", price:199,  stock:6,  avgSales:5, soldToday:4 },
+    { name:"Power Bank 10000mAh",       cat:"Cables & Chargers",  price:1299, stock:9,  avgSales:5, soldToday:3 },
+    { name:"Gaming Headset",            cat:"Audio",              price:1899, stock:8,  avgSales:2, soldToday:1 },
+    { name:"Portable SSD 1TB",          cat:"Storage",            price:6499, stock:4,  avgSales:1, soldToday:0 },
+    { name:"Bluetooth Earbuds",         cat:"Audio",              price:1599, stock:15, avgSales:3, soldToday:2 },
+    { name:"Wireless Charger Pad",      cat:"Cables & Chargers",  price:899,  stock:11, avgSales:3, soldToday:2 },
+    { name:"Smart Watch Band",          cat:"Mobile Accessories", price:399,  stock:14, avgSales:4, soldToday:3 },
+    { name:"Mechanical Keyboard",       cat:"Peripherals",        price:2999, stock:22, avgSales:2, soldToday:1 },
+    { name:"Webcam 1080p",              cat:"Peripherals",        price:1999, stock:18, avgSales:1, soldToday:1 },
+    { name:"Phone Case - iPhone 15",    cat:"Mobile Accessories", price:499,  stock:40, avgSales:8, soldToday:9 },
+    { name:"Laptop Stand",              cat:"Peripherals",        price:899,  stock:25, avgSales:1, soldToday:0 },
+    { name:"Smart Bulb",                cat:"Smart Home",         price:649,  stock:30, avgSales:1, soldToday:0 },
+  ];
+
+  function status(item){
+    const days = item.avgSales > 0 ? item.stock / item.avgSales : Infinity;
+    if(days <= 2) return "critical";
+    if(days <= 5) return "low";
+    return "good";
+  }
+  function stockoutDays(item){
+    if(item.avgSales <= 0) return Infinity;
+    return Math.max(0, Math.round(item.stock / item.avgSales));
+  }
+  function inr(n){
+    return "\u20B9" + Math.round(n).toLocaleString('en-IN');
+  }
+  function inrLakh(n){
+    if(n >= 100000) return "\u20B9" + (n/100000).toFixed(2) + " Lakh";
+    return inr(n);
+  }
+
+  const categoryEl = document.getElementById('sid-category');
+  const cats = [...new Set(products.map(p=>p.cat))];
+  cats.forEach(c=>{
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    categoryEl.appendChild(opt);
+  });
+
+  const searchEl = document.getElementById('sid-search');
+  const sortEl = document.getElementById('sid-sort');
+  const tbody = document.getElementById('sid-tbody');
+  const alertsEl = document.getElementById('sid-alerts');
+
+  function renderStats(){
+    const totalValue = products.reduce((s,p)=>s + p.price*p.stock, 0);
+    const lowCount = products.filter(p=>status(p) !== 'good').length;
+    const salesToday = products.reduce((s,p)=>s + p.price*p.soldToday, 0);
+    const unitsToday = products.reduce((s,p)=>s + p.soldToday, 0);
+
+    document.getElementById('sid-stat-value').textContent = inrLakh(totalValue);
+    document.getElementById('sid-stat-value-sub').textContent = `across ${products.length} SKUs`;
+    document.getElementById('sid-stat-low').textContent = lowCount;
+    document.getElementById('sid-stat-sales').textContent = inr(salesToday);
+    document.getElementById('sid-stat-sales-sub').textContent = `${unitsToday} units sold`;
+  }
+
+  function renderAlerts(){
+    const flagged = products
+      .filter(p=>status(p) !== 'good')
+      .sort((a,b)=>stockoutDays(a)-stockoutDays(b));
+
+    alertsEl.innerHTML = '';
+    if(flagged.length === 0){
+      alertsEl.innerHTML = '<p class="sid-empty-alerts">Nothing urgent right now &mdash; all items are comfortably stocked.</p>';
+      return;
+    }
+    flagged.forEach(p=>{
+      const st = status(p);
+      const days = stockoutDays(p);
+      const row = document.createElement('div');
+      row.className = 'sid-alert' + (st === 'low' ? ' sid-alert-low' : '');
+      row.innerHTML = `
+        <div class="sid-alert-info">
+          <div class="sid-alert-name">${p.name}</div>
+          <div class="sid-alert-meta">Stock: <b>${p.stock}</b> &nbsp;&middot;&nbsp; Avg. daily sales: ${p.avgSales} &nbsp;&middot;&nbsp; Predicted stockout: <b>${isFinite(days) ? days + (days===1?' day':' days') : '—'}</b></div>
+        </div>
+        <button class="sid-reorder-btn">Reorder</button>
+      `;
+      const btn = row.querySelector('.sid-reorder-btn');
+      btn.addEventListener('click', function(){
+        btn.textContent = 'Order placed \u2713';
+        btn.classList.add('sid-done');
+        btn.disabled = true;
+      });
+      alertsEl.appendChild(row);
+    });
+  }
+
+  function renderTable(){
+    const q = searchEl.value.trim().toLowerCase();
+    const cat = categoryEl.value;
+    const sortMode = sortEl.value;
+
+    let rows = products.filter(p=>{
+      const matchesQ = p.name.toLowerCase().includes(q);
+      const matchesCat = cat === 'all' || p.cat === cat;
+      return matchesQ && matchesCat;
+    });
+
+    rows = rows.slice().sort((a,b)=>{
+      if(sortMode === 'stock-asc') return a.stock - b.stock;
+      if(sortMode === 'name-asc') return a.name.localeCompare(b.name);
+      if(sortMode === 'sales-desc') return b.avgSales - a.avgSales;
+      // default: stockout-asc
+      return stockoutDays(a) - stockoutDays(b);
+    });
+
+    tbody.innerHTML = '';
+    if(rows.length === 0){
+      tbody.innerHTML = '<tr><td colspan="6" style="padding:16px;color:var(--charcoal-soft);font-style:italic;">No items match your search.</td></tr>';
+      return;
+    }
+
+    rows.forEach(p=>{
+      const st = status(p);
+      const days = stockoutDays(p);
+      const tagClass = st === 'critical' ? 'sid-tag-critical' : st === 'low' ? 'sid-tag-low' : 'sid-tag-good';
+      const tagLabel = st === 'critical' ? 'Critical' : st === 'low' ? 'Low' : 'Good';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>
+          <div class="sid-item-name">${p.name}</div>
+          <div class="sid-item-cat">${p.cat}</div>
+        </td>
+        <td class="sid-mono">${p.stock}</td>
+        <td class="sid-mono">${p.avgSales}/day</td>
+        <td class="sid-mono">${isFinite(days) ? days : '—'}</td>
+        <td><span class="sid-tag ${tagClass}">${tagLabel}</span></td>
+        <td><button class="sid-add-btn">+10</button></td>
+      `;
+      const addBtn = tr.querySelector('.sid-add-btn');
+      addBtn.addEventListener('click', function(){
+        p.stock += 10;
+        renderAll();
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderAll(){
+    renderStats();
+    renderAlerts();
+    renderTable();
+  }
+
+  searchEl.addEventListener('input', renderTable);
+  categoryEl.addEventListener('change', renderTable);
+  sortEl.addEventListener('change', renderTable);
+
+  document.getElementById('sid-updated').textContent =
+    'Last updated: ' + new Date().toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+
+  renderAll();
+})();
+</script>
+
+<div id="google_translate_element" style="position:fixed;top:14px;right:14px;z-index:99999;"></div><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script><script type="text/javascript">function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"zh-CN,en",layout:google.translate.TranslateElement.InlineLayout.SIMPLE},"google_translate_element");}</script><script>(function(){function adjustForTranslateBanner(){var banner=document.querySelector(".goog-te-banner-frame");var header=document.querySelector("header");var dd=document.getElementById("google_translate_element");var bannerH=banner&&banner.offsetHeight>0?banner.offsetHeight:0;if(header){header.style.position="sticky";header.style.top=bannerH+"px";}if(dd){dd.style.top=(62+bannerH)+"px";}if(document.body){document.body.style.marginTop=bannerH+"px";}}var observer=new MutationObserver(function(){adjustForTranslateBanner();});observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class"]});window.addEventListener("resize",adjustForTranslateBanner);setTimeout(function(){adjustForTranslateBanner();var saved=localStorage.getItem("lang_pref");if(saved==="zh"){var sel=document.querySelector(".goog-te-combo");if(sel){sel.value="zh-CN";var e=new Event("change");sel.dispatchEvent(e);}}},500);setInterval(adjustForTranslateBanner,2000);})();</script>
+</body>
+</html>

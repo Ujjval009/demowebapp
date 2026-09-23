@@ -1,0 +1,1 @@
+xdg-open study-desk.html

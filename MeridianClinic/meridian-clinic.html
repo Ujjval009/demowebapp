@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian Clinic — Operations</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root{
+  --paper:#EEF0EA;
+  --card:#FBFAF5;
+  --ink:#172420;
+  --ink-soft:#57655F;
+  --ink-faint:#8B968F;
+  --primary:#2C5F4F;
+  --primary-dark:#1C3B31;
+  --primary-tint:#DEE9E3;
+  --accent:#B8863A;
+  --accent-tint:#F3E7D2;
+  --alert:#B84A3E;
+  --alert-tint:#F4DEDA;
+  --success:#4C8B6F;
+  --success-tint:#DDEBE3;
+  --violet:#7C6AA0;
+  --violet-tint:#E6E1EF;
+  --steel:#456E93;
+  --steel-tint:#DDE7EE;
+  --line:#D8D5C6;
+  --serif:'Source Serif 4', serif;
+  --sans:'IBM Plex Sans', sans-serif;
+  --mono:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:14px;
+  line-height:1.5;
+}
+a{color:inherit;text-decoration:none;}
+button{font-family:var(--sans);cursor:pointer;}
+h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0;color:var(--ink);}
+input,select,textarea{
+  font-family:var(--sans);
+  font-size:14px;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:4px;
+  padding:9px 10px;
+  color:var(--ink);
+  width:100%;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--primary);outline-offset:1px;border-color:var(--primary);}
+label{display:block;font-size:12.5px;color:var(--ink-soft);margin-bottom:5px;}
+.field{margin-bottom:14px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* ---------- shell ---------- */
+.app-shell{display:flex;min-height:100vh;}
+.sidebar{
+  width:232px;background:var(--primary-dark);color:#E9EEE9;
+  position:fixed;top:0;left:0;bottom:0;padding:26px 18px;
+  display:flex;flex-direction:column;
+}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px 24px 6px;border-bottom:1px solid rgba(255,255,255,0.12);margin-bottom:18px;}
+.brand-mark{width:30px;height:30px;flex:none;}
+.brand-name{font-family:var(--serif);font-size:17px;font-weight:600;color:#fff;line-height:1.1;}
+.brand-sub{font-size:11px;color:#A9BDB3;margin-top:2px;}
+.nav-item{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:5px;
+  color:#C9D6CE;font-size:13.5px;margin-bottom:2px;transition:background .12s;
+}
+.nav-item svg{width:17px;height:17px;flex:none;}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:#fff;}
+.nav-item.active{background:var(--primary);color:#fff;}
+.sidebar-foot{margin-top:auto;padding:12px 10px 0 10px;border-top:1px solid rgba(255,255,255,0.12);font-size:12px;color:#9DB2A7;}
+
+.main{margin-left:232px;flex:1;padding:30px 38px 60px 38px;max-width:1180px;}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px;flex-wrap:wrap;gap:14px;}
+.topbar h1{font-size:25px;}
+.topbar .date{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
+.btn{
+  border:1px solid var(--primary);background:var(--primary);color:#fff;
+  padding:9px 16px;border-radius:5px;font-size:13.5px;font-weight:500;
+}
+.btn:hover{background:var(--primary-dark);}
+.btn.secondary{background:transparent;color:var(--primary);border-color:var(--primary);}
+.btn.secondary:hover{background:var(--primary-tint);}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff;}
+.btn.accent:hover{background:#9C6E2C;}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--ink-soft);}
+.btn.ghost:hover{border-color:var(--ink-soft);}
+.btn.small{padding:6px 11px;font-size:12.5px;}
+.btn.danger{background:transparent;border-color:var(--alert);color:var(--alert);}
+.btn.danger:hover{background:var(--alert-tint);}
+
+.ekg{width:100%;height:30px;margin:14px 0 22px 0;overflow:hidden;}
+.ekg path{fill:none;stroke:var(--primary);stroke-width:1.6;}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:7px;padding:20px 22px;}
+.panel + .panel{margin-top:18px;}
+.panel h2{font-size:16px;margin-bottom:14px;}
+.two-col{display:grid;grid-template-columns:1.55fr 1fr;gap:18px;align-items:start;}
+@media (max-width:900px){.two-col{grid-template-columns:1fr;}}
+
+.stat-row{display:flex;gap:14px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-tile{background:var(--card);border:1px solid var(--line);border-radius:7px;padding:15px 18px;flex:1;min-width:150px;border-top:3px solid var(--primary);}
+.stat-tile .num{font-family:var(--mono);font-size:26px;font-weight:500;}
+.stat-tile .label{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+.stat-tile.alert{border-top-color:var(--alert);}
+.stat-tile.accent{border-top-color:var(--accent);}
+.stat-tile.success{border-top-color:var(--success);}
+
+/* schedule / timeline */
+.timeline-row{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);align-items:center;}
+.timeline-row:last-child{border-bottom:none;}
+.timeline-time{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);width:52px;flex:none;}
+.doc-dot{width:8px;height:8px;border-radius:50%;flex:none;}
+.timeline-body{flex:1;min-width:0;}
+.timeline-body .who{font-size:13.5px;font-weight:500;}
+.timeline-body .what{font-size:12px;color:var(--ink-soft);}
+.pill{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:500;white-space:nowrap;}
+.pill.scheduled{background:var(--steel-tint);color:var(--steel);}
+.pill.checked-in{background:var(--accent-tint);color:var(--accent);}
+.pill.completed{background:var(--success-tint);color:var(--success);}
+.pill.cancelled{background:var(--alert-tint);color:var(--alert);}
+.pill.paid{background:var(--success-tint);color:var(--success);}
+.pill.pending{background:var(--accent-tint);color:var(--accent);}
+.pill.overdue{background:var(--alert-tint);color:var(--alert);}
+
+.attn-row{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);align-items:flex-start;}
+.attn-row:last-child{border-bottom:none;}
+.attn-dot{width:7px;height:7px;border-radius:50%;background:var(--alert);margin-top:6px;flex:none;}
+.attn-row .t{font-size:13px;}
+.attn-row .s{font-size:11.5px;color:var(--ink-soft);}
+
+/* tables */
+table.data-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.data-table th{text-align:left;font-size:12px;color:var(--ink-soft);font-weight:500;padding:0 10px 9px 10px;border-bottom:1px solid var(--line);}
+.data-table td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:middle;}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr.clickable:hover{background:var(--primary-tint);cursor:pointer;}
+.mono{font-family:var(--mono);}
+.muted{color:var(--ink-soft);}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap;}
+.search-box{max-width:280px;}
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--line);}
+.tab{padding:9px 4px;margin-right:18px;font-size:13.5px;color:var(--ink-soft);border-bottom:2px solid transparent;cursor:pointer;}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:500;}
+.allergy-flag{width:7px;height:7px;border-radius:50%;background:var(--alert);display:inline-block;margin-right:6px;}
+
+/* doctor directory */
+.doctor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.doctor-card{background:var(--card);border:1px solid var(--line);border-radius:7px;padding:16px;border-left:4px solid var(--primary);}
+.doctor-card .avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--serif);font-weight:600;font-size:14px;margin-bottom:10px;}
+.doctor-card .name{font-size:14.5px;font-weight:600;}
+.doctor-card .spec{font-size:12px;color:var(--ink-soft);margin-bottom:10px;}
+.avail-row{display:flex;gap:4px;margin-top:8px;}
+.avail-chip{flex:1;text-align:center;font-size:10.5px;padding:4px 0;border-radius:3px;background:var(--line);color:var(--ink-faint);}
+.avail-chip.on{background:var(--success-tint);color:var(--success);font-weight:500;}
+
+/* calendar */
+.cal-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.cal-grid{display:grid;grid-template-columns:52px repeat(7,1fr);border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--card);}
+.cal-head{padding:9px 6px;text-align:center;font-size:12px;border-bottom:1px solid var(--line);border-left:1px solid var(--line);}
+.cal-head.today{background:var(--primary-tint);}
+.cal-head .d{font-weight:600;font-size:14px;font-family:var(--serif);}
+.cal-corner{border-bottom:1px solid var(--line);}
+.cal-time-col{display:flex;flex-direction:column;}
+.cal-time{height:56px;font-size:10.5px;color:var(--ink-faint);text-align:right;padding-right:6px;border-top:1px solid var(--line);font-family:var(--mono);transform:translateY(-6px);}
+.cal-day-col{position:relative;border-left:1px solid var(--line);background-image:repeating-linear-gradient(to bottom, transparent, transparent 55px, var(--line) 55px, var(--line) 56px);}
+.cal-slot-click{position:absolute;left:0;right:0;height:56px;}
+.appt-block{
+  position:absolute;left:3px;right:3px;border-radius:4px;padding:4px 6px;overflow:hidden;
+  font-size:11px;color:#fff;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,0.12);
+}
+.appt-block .t{font-weight:600;font-size:11px;}
+.appt-block .p{font-size:10.5px;opacity:.92;}
+.appt-block.cancelled{opacity:.45;text-decoration:line-through;}
+
+/* rx pad */
+.rx-pad{background:#fff;border:1px solid var(--line);border-radius:7px;padding:0;overflow:hidden;}
+.rx-head{background:var(--primary-dark);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;}
+.rx-head .clinic{font-family:var(--serif);font-size:16px;}
+.rx-head .sub{font-size:11px;color:#A9BDB3;}
+.rx-symbol{font-family:var(--serif);font-size:34px;font-style:italic;color:var(--primary);line-height:1;}
+.rx-body{padding:18px 22px;}
+.rx-meta{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px;}
+.rx-med-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);}
+.rx-med-row:last-child{border-bottom:none;}
+.rx-med-row .name{font-weight:600;font-size:13.5px;}
+.rx-med-row .dose{font-size:12px;color:var(--ink-soft);}
+.rx-sign{margin-top:22px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-end;}
+.rx-sign .line{border-top:1px solid var(--ink);width:170px;font-size:11.5px;color:var(--ink-soft);padding-top:4px;text-align:center;}
+
+/* empty state */
+.empty{text-align:center;padding:44px 20px;color:var(--ink-soft);}
+.empty h3{margin-bottom:6px;color:var(--ink);}
+.empty p{font-size:13px;margin:0;}
+
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(23,36,32,0.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;z-index:50;}
+.modal{background:var(--card);border-radius:8px;max-width:560px;width:100%;padding:24px 26px;}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
+.modal-head h2{font-size:18px;}
+.modal-close{background:none;border:none;font-size:20px;color:var(--ink-soft);line-height:1;padding:2px 6px;}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;}
+.med-line{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center;}
+.item-line{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin-bottom:8px;align-items:center;}
+.remove-x{background:none;border:none;color:var(--ink-faint);font-size:16px;padding:0 4px;}
+.total-row{display:flex;justify-content:space-between;padding-top:12px;margin-top:6px;border-top:1px solid var(--line);font-size:15px;font-weight:600;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:13.5px;margin-bottom:6px;}
+.detail-grid .k{color:var(--ink-soft);font-size:11.5px;}
+<style>.goog-te-banner-frame{position:fixed!important;top:0!important;left:0!important;width:100%!important;z-index:2147483647!important;}.goog-te-banner-frame.skiptranslate{display:none!important;}.goog-te-menu-frame{font-family:ui-sans-serif,sans-serif!important;}body{transition:margin-top .3s ease;}#google_translate_element{position:fixed;top:14px;right:14px;z-index:99999;}#google_translate_element .goog-te-combo{padding:8px 16px;border-radius:999px;border:2px solid rgba(255,255,255,.6);background:rgba(30,40,60,.85);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:ui-sans-serif,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.3);backdrop-filter:blur(10px);appearance:none;-webkit-appearance:none;}#google_translate_element .goog-te-combo:hover{background:rgba(30,40,60,.95);transform:scale(1.05);}#google_translate_element .goog-te-combo:focus{outline:2px solid var(--teal, #2F7A6D);outline-offset:2px;}</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+
+<script>
+/* ---------------------------------------------------------------
+   DATA
+---------------------------------------------------------------- */
+const ICONS = {
+  dashboard:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>',
+  patients:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M15.5 14.2c2.7.4 4.5 2.3 4.5 5.3"/></svg>',
+  doctors:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3v4a4 4 0 0 0 8 0V3"/><path d="M12 12v4"/><circle cx="12" cy="19" r="2.2"/><path d="M5 6v4a7 7 0 0 0 3.5 6.1"/><path d="M19 6v4a7 7 0 0 1-3.5 6.1"/></svg>',
+  appointments:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18"/><path d="M8 2.5v4M16 2.5v4"/><path d="M8 14l2.3 2.3L16 11"/></svg>',
+  records:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h9l4 4v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/><path d="M8 12h7M8 16h7M8 9h3"/></svg>',
+  prescriptions:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V8a4 4 0 0 1 4-4h1a4 4 0 0 1 4 4v3"/><path d="M9 15h9"/><path d="M18 12v3a3 3 0 0 1-3 3v3"/></svg>',
+  billing:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>',
+};
+
+const DOCTORS = [
+  {id:'DR-01', name:'Dr. Ada Whitfield', specialty:'General Practice', color:'#2C5F4F', tint:'#DEE9E3', avail:[1,1,1,1,1,0,0], patientsToday:5},
+  {id:'DR-02', name:'Dr. Marcus Chen', specialty:'Pediatrics', color:'#4C8B6F', tint:'#DDEBE3', avail:[1,1,0,1,1,0,0], patientsToday:4},
+  {id:'DR-03', name:'Dr. Priya Nandakumar', specialty:'Cardiology', color:'#B8863A', tint:'#F3E7D2', avail:[0,1,1,1,0,0,0], patientsToday:3},
+  {id:'DR-04', name:'Dr. Elena Osei', specialty:'Dermatology', color:'#7C6AA0', tint:'#E6E1EF', avail:[1,0,1,0,1,0,0], patientsToday:2},
+  {id:'DR-05', name:'Dr. Sam Okafor', specialty:'Orthopedics', color:'#456E93', tint:'#DDE7EE', avail:[1,1,1,0,1,1,0], patientsToday:3},
+];
+
+const PATIENTS = [
+  {id:'PT-0001', name:'Grace Holloway', sex:'F', dob:'1985-03-12', phone:'(555) 201-3344', email:'grace.holloway@mail.com', blood:'O+', allergies:['Penicillin'], lastVisit:'2026-09-10'},
+  {id:'PT-0002', name:'Liam Brennan', sex:'M', dob:'1990-07-22', phone:'(555) 220-7781', email:'liam.brennan@mail.com', blood:'A-', allergies:[], lastVisit:'2026-08-28'},
+  {id:'PT-0003', name:'Sofia Marquez', sex:'F', dob:'2016-01-30', phone:'(555) 348-9012', email:'sofia.parent@mail.com', blood:'B+', allergies:['Peanuts'], lastVisit:'2026-09-02'},
+  {id:'PT-0004', name:'Daniel Petrov', sex:'M', dob:'1968-11-05', phone:'(555) 460-2298', email:'d.petrov@mail.com', blood:'AB+', allergies:[], lastVisit:'2026-07-19'},
+  {id:'PT-0005', name:'Amara Johnson', sex:'F', dob:'1997-05-17', phone:'(555) 519-6633', email:'amara.j@mail.com', blood:'O-', allergies:['Latex'], lastVisit:'2026-09-12'},
+  {id:'PT-0006', name:'Ethan Wallace', sex:'M', dob:'1959-02-09', phone:'(555) 602-1187', email:'e.wallace@mail.com', blood:'A+', allergies:[], lastVisit:'2026-06-30'},
+  {id:'PT-0007', name:'Priya Sharma', sex:'F', dob:'1992-09-24', phone:'(555) 711-4420', email:'priya.sharma@mail.com', blood:'B-', allergies:['Sulfa drugs'], lastVisit:'2026-09-08'},
+  {id:'PT-0008', name:'Marcus Lee', sex:'M', dob:'2021-04-02', phone:'(555) 803-9954', email:'lee.family@mail.com', blood:'O+', allergies:[], lastVisit:'2026-08-14'},
+  {id:'PT-0009', name:'Fatima Al-Rashid', sex:'F', dob:'1981-12-19', phone:'(555) 927-3301', email:'f.alrashid@mail.com', blood:'AB-', allergies:[], lastVisit:'2026-09-01'},
+  {id:'PT-0010', name:'Tobias Reinholt', sex:'M', dob:'1954-06-27', phone:'(555) 118-6672', email:'t.reinholt@mail.com', blood:'A+', allergies:['Aspirin'], lastVisit:'2026-05-22'},
+];
+
+let appointments = [
+  {id:'AP-001', patientId:'PT-0001', doctorId:'DR-01', date:'2026-09-14', start:'09:00', end:'09:30', reason:'Annual physical', status:'checked-in'},
+  {id:'AP-002', patientId:'PT-0005', doctorId:'DR-01', date:'2026-09-14', start:'10:00', end:'10:30', reason:'Follow-up: hypertension', status:'scheduled'},
+  {id:'AP-003', patientId:'PT-0003', doctorId:'DR-02', date:'2026-09-14', start:'09:30', end:'10:00', reason:'Vaccination', status:'completed'},
+  {id:'AP-004', patientId:'PT-0007', doctorId:'DR-03', date:'2026-09-14', start:'11:00', end:'11:45', reason:'Palpitations review', status:'scheduled'},
+  {id:'AP-005', patientId:'PT-0009', doctorId:'DR-04', date:'2026-09-14', start:'13:30', end:'14:00', reason:'Skin consultation', status:'scheduled'},
+  {id:'AP-006', patientId:'PT-0010', doctorId:'DR-05', date:'2026-09-14', start:'14:30', end:'15:15', reason:'Knee pain', status:'scheduled'},
+  {id:'AP-007', patientId:'PT-0002', doctorId:'DR-01', date:'2026-09-15', start:'09:30', end:'10:00', reason:'Lab results', status:'scheduled'},
+  {id:'AP-008', patientId:'PT-0008', doctorId:'DR-02', date:'2026-09-15', start:'11:00', end:'11:30', reason:'Well-child visit', status:'scheduled'},
+  {id:'AP-009', patientId:'PT-0004', doctorId:'DR-03', date:'2026-09-16', start:'10:00', end:'10:45', reason:'ECG review', status:'scheduled'},
+  {id:'AP-010', patientId:'PT-0006', doctorId:'DR-05', date:'2026-09-16', start:'15:00', end:'15:30', reason:'Post-op check', status:'scheduled'},
+  {id:'AP-011', patientId:'PT-0001', doctorId:'DR-01', date:'2026-09-17', start:'09:00', end:'09:30', reason:'Prescription renewal', status:'cancelled'},
+  {id:'AP-012', patientId:'PT-0009', doctorId:'DR-04', date:'2026-09-18', start:'14:00', end:'14:30', reason:'Rash follow-up', status:'scheduled'},
+];
+
+let records = [
+  {id:'REC-001', patientId:'PT-0001', doctorId:'DR-01', date:'2026-09-10', vitals:{bp:'128/82', hr:'76', temp:'98.4', weight:'147'}, diagnosis:'Seasonal allergic rhinitis', notes:'Recommended antihistamine, review in 4 weeks.'},
+  {id:'REC-002', patientId:'PT-0001', doctorId:'DR-01', date:'2026-06-02', vitals:{bp:'132/85', hr:'80', temp:'98.6', weight:'149'}, diagnosis:'Routine physical — no acute findings', notes:'Cholesterol panel ordered.'},
+  {id:'REC-003', patientId:'PT-0005', doctorId:'DR-01', date:'2026-09-12', vitals:{bp:'138/90', hr:'88', temp:'98.7', weight:'162'}, diagnosis:'Hypertension, stage 1', notes:'Started on low-dose ACE inhibitor.'},
+  {id:'REC-004', patientId:'PT-0007', doctorId:'DR-03', date:'2026-09-08', vitals:{bp:'118/76', hr:'96', temp:'98.5', weight:'134'}, diagnosis:'Palpitations, likely benign', notes:'Holter monitor ordered for 48h.'},
+  {id:'REC-005', patientId:'PT-0003', doctorId:'DR-02', date:'2026-09-02', vitals:{bp:'—', hr:'92', temp:'98.2', weight:'68'}, diagnosis:'Routine vaccination', notes:'DTaP booster administered, no reaction observed.'},
+];
+
+let prescriptions = [
+  {id:'RX-0001', patientId:'PT-0001', doctorId:'DR-01', date:'2026-09-10', meds:[{name:'Cetirizine', dosage:'10mg', frequency:'Once daily', duration:'30 days'}], notes:'Take in the evening. Avoid alcohol.'},
+  {id:'RX-0002', patientId:'PT-0005', doctorId:'DR-01', date:'2026-09-12', meds:[{name:'Lisinopril', dosage:'5mg', frequency:'Once daily', duration:'90 days'},{name:'Aspirin', dosage:'81mg', frequency:'Once daily', duration:'90 days'}], notes:'Recheck blood pressure in 2 weeks.'},
+];
+
+let invoices = [
+  {id:'INV-0001', patientId:'PT-0001', doctorId:'DR-01', date:'2026-09-10', items:[{desc:'Consultation — General Practice', amount:120},{desc:'Allergy panel', amount:85}], status:'paid'},
+  {id:'INV-0002', patientId:'PT-0005', doctorId:'DR-01', date:'2026-09-12', items:[{desc:'Consultation — Follow-up', amount:95},{desc:'ECG', amount:140}], status:'pending'},
+  {id:'INV-0003', patientId:'PT-0007', doctorId:'DR-03', date:'2026-09-08', items:[{desc:'Consultation — Cardiology', amount:210},{desc:'Holter monitor rental', amount:180}], status:'pending'},
+  {id:'INV-0004', patientId:'PT-0010', doctorId:'DR-05', date:'2026-08-02', items:[{desc:'Consultation — Orthopedics', amount:180},{desc:'X-ray, knee', amount:160}], status:'overdue'},
+  {id:'INV-0005', patientId:'PT-0003', doctorId:'DR-02', date:'2026-09-02', items:[{desc:'Vaccination visit', amount:65},{desc:'DTaP booster', amount:45}], status:'paid'},
+  {id:'INV-0006', patientId:'PT-0009', doctorId:'DR-04', date:'2026-09-01', items:[{desc:'Consultation — Dermatology', amount:150}], status:'overdue'},
+];
+
+let payments = [
+  {id:'PMT-001', invoiceId:'INV-0001', date:'2026-09-10', amount:205, method:'Card'},
+  {id:'PMT-002', invoiceId:'INV-0005', date:'2026-09-02', amount:110, method:'Insurance'},
+];
+
+let nextIds = {patient:11, appt:13, rec:6, rx:3, inv:7, pmt:3};
+
+/* ---------------------------------------------------------------
+   STATE + HELPERS
+---------------------------------------------------------------- */
+let state = { view:'dashboard', weekStart:'2026-09-14', selectedPatientId:null, billingFilter:'all', rxPatientId:null, patientTab:'overview' };
+const TODAY = '2026-09-14';
+const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+function money(n){ return '$' + Number(n).toFixed(2); }
+function findDoctor(id){ return DOCTORS.find(d=>d.id===id); }
+function findPatient(id){ return PATIENTS.find(p=>p.id===id); }
+function age(dob){ const d=new Date(dob), t=new Date(TODAY); let a=t.getFullYear()-d.getFullYear(); const m=t.getMonth()-d.getMonth(); if(m<0||(m===0&&t.getDate()<d.getDate())) a--; return a; }
+function fmtDateLong(dstr){ const d=new Date(dstr+'T00:00:00'); return d.toLocaleDateString('en-US',{weekday:'long', month:'long', day:'numeric', year:'numeric'}); }
+function fmtDateShort(dstr){ const d=new Date(dstr+'T00:00:00'); return d.toLocaleDateString('en-US',{month:'short', day:'numeric'}); }
+function addDays(dstr,n){ const d=new Date(dstr+'T00:00:00'); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); }
+function invoiceTotal(inv){ return inv.items.reduce((s,i)=>s+Number(i.amount),0); }
+function invoicePaid(inv){ return payments.filter(p=>p.invoiceId===inv.id).reduce((s,p)=>s+Number(p.amount),0); }
+function esc(s){ return String(s).replace(/</g,'&lt;'); }
+
+function setView(v, extra){ state.view=v; if(extra) Object.assign(state, extra); render(); }
+function closeModal(){ document.getElementById('modal-root').innerHTML=''; }
+function openModal(html){ document.getElementById('modal-root').innerHTML = '<div class="modal-overlay" onclick="if(event.target===this) closeModal()"><div class="modal">'+html+'</div></div>'; }
+
+/* ---------------------------------------------------------------
+   SHELL
+---------------------------------------------------------------- */
+function navItem(key, label){
+  return `<a class="nav-item ${state.view===key?'active':''}" onclick="setView('${key}')">${ICONS[key]}<span>${label}</span></a>`;
+}
+
+function renderShell(contentHtml, title, sub){
+  return `
+  <div class="app-shell">
+    <div class="sidebar">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="15" stroke="#6FA48F" stroke-width="1.4"/><path d="M6 16h4l2-7 4 14 3-10 2 3h5" stroke="#EDF3EF" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><div class="brand-name">Meridian Clinic</div><div class="brand-sub">Operations desk</div></div>
+      </div>
+      <nav>
+        ${navItem('dashboard','Dashboard')}
+        ${navItem('patients','Patients')}
+        ${navItem('doctors','Doctors')}
+        ${navItem('appointments','Appointments')}
+        ${navItem('records','Patient records')}
+        ${navItem('prescriptions','Prescriptions')}
+        ${navItem('billing','Billing & payments')}
+      </nav>
+      <div class="sidebar-foot">Front desk — Ambala Branch<br>Signed in as reception staff</div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div><h1>${title}</h1>${sub?`<div class="date">${sub}</div>`:''}</div>
+        <div id="topbar-action"></div>
+      </div>
+      ${contentHtml}
+    </div>
+  </div>`;
+}
+
+function ekgDivider(){
+  return `<div class="ekg"><svg viewBox="0 0 800 30" preserveAspectRatio="none"><path d="M0 15 H260 L275 15 L285 3 L297 27 L308 15 L322 15 L332 8 L340 22 L348 15 H800"/></svg></div>`;
+}
+
+/* ---------------------------------------------------------------
+   DASHBOARD
+---------------------------------------------------------------- */
+function renderDashboard(){
+  const todays = appointments.filter(a=>a.date===TODAY && a.status!=='cancelled').sort((a,b)=>a.start.localeCompare(b.start));
+  const checkedIn = todays.filter(a=>a.status==='checked-in').length;
+  const pendingInvAmt = invoices.filter(i=>i.status!=='paid').reduce((s,i)=>s+ (invoiceTotal(i)-invoicePaid(i)),0);
+  const newPatientsWeek = 3;
+
+  const scheduleRows = todays.map(a=>{
+    const doc = findDoctor(a.doctorId), pat = findPatient(a.patientId);
+    return `<div class="timeline-row">
+      <div class="timeline-time">${a.start}</div>
+      <div class="doc-dot" style="background:${doc.color}"></div>
+      <div class="timeline-body">
+        <div class="who">${pat.name}</div>
+        <div class="what">${a.reason} · ${doc.name}</div>
+      </div>
+      <span class="pill ${a.status}">${a.status.replace('-',' ')}</span>
+    </div>`;
+  }).join('') || `<div class="empty"><p>No appointments remain for today.</p></div>`;
+
+  const overdue = invoices.filter(i=>i.status==='overdue');
+  const unconfirmed = appointments.filter(a=>a.date===addDays(TODAY,1) && a.status==='scheduled').slice(0,2);
+  const attnItems = [
+    ...overdue.map(i=>({t:`${findPatient(i.patientId).name} — invoice ${i.id} overdue`, s:money(invoiceTotal(i)-invoicePaid(i))+' outstanding'})),
+    ...PATIENTS.filter(p=>p.allergies.length && appointments.some(a=>a.patientId===p.id && a.date===TODAY)).map(p=>({t:`${p.name} has a recorded allergy`, s:p.allergies.join(', ')+' — flag before prescribing'})),
+    ...unconfirmed.map(a=>({t:`${findPatient(a.patientId).name} — tomorrow ${a.start} unconfirmed`, s:`With ${findDoctor(a.doctorId).name}`})),
+  ];
+
+  const content = `
+    ${ekgDivider()}
+    <div class="stat-row">
+      <div class="stat-tile"><div class="num">${todays.length}</div><div class="label">Appointments today</div></div>
+      <div class="stat-tile accent"><div class="num">${checkedIn}</div><div class="label">Patients checked in</div></div>
+      <div class="stat-tile alert"><div class="num">${money(pendingInvAmt)}</div><div class="label">Pending payments</div></div>
+      <div class="stat-tile success"><div class="num">${newPatientsWeek}</div><div class="label">New patients this week</div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <h2>Today's schedule</h2>
+        ${scheduleRows}
+      </div>
+      <div class="panel">
+        <h2>Needs attention</h2>
+        ${attnItems.map(i=>`<div class="attn-row"><div class="attn-dot"></div><div><div class="t">${i.t}</div><div class="s">${i.s}</div></div></div>`).join('') || '<div class="empty"><p>All clear — nothing pending.</p></div>'}
+      </div>
+    </div>`;
+
+  document.getElementById('app').innerHTML = renderShell(content, 'Dashboard', fmtDateLong(TODAY));
+  document.getElementById('topbar-action').innerHTML = `<button class="btn" onclick="openNewAppointmentModal()">New appointment</button>`;
+}
+
+/* ---------------------------------------------------------------
+   PATIENTS
+---------------------------------------------------------------- */
+function renderPatients(){
+  const q = (state.patientSearch||'').toLowerCase();
+  const list = PATIENTS.filter(p=> p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q));
+  const rows = list.map(p=>`
+    <tr class="clickable" onclick="setView('patientDetail',{selectedPatientId:'${p.id}', patientTab:'overview'})">
+      <td class="mono">${p.id}</td>
+      <td>${p.allergies.length?'<span class="allergy-flag" title="Has allergies"></span>':''}${p.name}</td>
+      <td>${age(p.dob)} / ${p.sex}</td>
+      <td>${p.phone}</td>
+      <td class="mono">${p.blood}</td>
+      <td>${fmtDateShort(p.lastVisit)}</td>
+    </tr>`).join('');
+
+  const content = `
+    <div class="panel">
+      <div class="toolbar">
+        <input class="search-box" placeholder="Search by name or patient ID" oninput="state.patientSearch=this.value; renderPatients();">
+        <span class="muted" style="font-size:12.5px;">${list.length} patient${list.length===1?'':'s'}</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Patient ID</th><th>Name</th><th>Age / Sex</th><th>Phone</th><th>Blood</th><th>Last visit</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="6"><div class="empty"><p>No patients match your search.</p></div></td></tr>'}</tbody>
+      </table>
+    </div>`;
+  document.getElementById('app').innerHTML = renderShell(content, 'Patients');
+  document.getElementById('topbar-action').innerHTML = `<button class="btn accent" onclick="openRegisterPatientModal()">Register patient</button>`;
+  // preserve caret focus behavior not critical for demo
+}
+
+function openRegisterPatientModal(){
+  openModal(`
+    <div class="modal-head"><h2>Register patient</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <form onsubmit="submitNewPatient(event)">
+      <div class="field-row">
+        <div class="field"><label>Full name</label><input required id="np-name"></div>
+        <div class="field"><label>Sex</label><select id="np-sex"><option>F</option><option>M</option><option>Other</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Date of birth</label><input required type="date" id="np-dob"></div>
+        <div class="field"><label>Blood type</label><select id="np-blood"><option>O+</option><option>O-</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Phone</label><input required id="np-phone" placeholder="(555) 000-0000"></div>
+        <div class="field"><label>Email</label><input type="email" id="np-email"></div>
+      </div>
+      <div class="field"><label>Known allergies (comma separated, leave blank if none)</label><input id="np-allergies" placeholder="e.g. Penicillin, Latex"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn accent">Register patient</button>
+      </div>
+    </form>`);
+}
+function submitNewPatient(e){
+  e.preventDefault();
+  const id = 'PT-' + String(nextIds.patient++).padStart(4,'0');
+  const allergiesRaw = document.getElementById('np-allergies').value.trim();
+  PATIENTS.push({
+    id, name:document.getElementById('np-name').value.trim(),
+    sex:document.getElementById('np-sex').value,
+    dob:document.getElementById('np-dob').value || '2000-01-01',
+    phone:document.getElementById('np-phone').value.trim(),
+    email:document.getElementById('np-email').value.trim(),
+    blood:document.getElementById('np-blood').value,
+    allergies: allergiesRaw ? allergiesRaw.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    lastVisit: TODAY,
+  });
+  closeModal();
+  setView('patients');
+}
+
+function renderPatientDetail(){
+  const p = findPatient(state.selectedPatientId);
+  if(!p){ setView('patients'); return; }
+  const tabs = ['overview','records','prescriptions','billing'];
+  const tabLabels = {overview:'Overview', records:'Visit history', prescriptions:'Prescriptions', billing:'Billing'};
+
+  let body='';
+  if(state.patientTab==='overview'){
+    const upcoming = appointments.filter(a=>a.patientId===p.id && a.status!=='cancelled' && a.date>=TODAY).sort((a,b)=>a.date.localeCompare(b.date))[0];
+    body = `
+      <div class="detail-grid">
+        <div><div class="k">Date of birth</div>${p.dob} (age ${age(p.dob)})</div>
+        <div><div class="k">Sex</div>${p.sex}</div>
+        <div><div class="k">Phone</div>${p.phone}</div>
+        <div><div class="k">Email</div>${p.email||'—'}</div>
+        <div><div class="k">Blood type</div>${p.blood}</div>
+        <div><div class="k">Allergies</div>${p.allergies.length? p.allergies.join(', ') : 'None recorded'}</div>
+      </div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);">
+        <div class="k" style="font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;">Next appointment</div>
+        ${upcoming ? `${fmtDateLong(upcoming.date)}, ${upcoming.start} — ${upcoming.reason} with ${findDoctor(upcoming.doctorId).name}` : 'No upcoming appointment scheduled.'}
+      </div>`;
+  } else if(state.patientTab==='records'){
+    const recs = records.filter(r=>r.patientId===p.id).sort((a,b)=>b.date.localeCompare(a.date));
+    body = recs.map(r=>`
+      <div style="padding:12px 0;border-bottom:1px solid var(--line);">
+        <div style="display:flex;justify-content:space-between;"><strong>${fmtDateLong(r.date)}</strong><span class="muted">${findDoctor(r.doctorId).name}</span></div>
+        <div class="mono muted" style="font-size:12px;margin:5px 0;">BP ${r.vitals.bp} · HR ${r.vitals.hr} · Temp ${r.vitals.temp}°F · Weight ${r.vitals.weight} lb</div>
+        <div style="font-size:13.5px;"><strong>${r.diagnosis}</strong></div>
+        <div class="muted" style="font-size:13px;">${r.notes}</div>
+      </div>`).join('') || '<div class="empty"><p>No visit records yet.</p></div>';
+    body += `<div style="margin-top:14px;"><button class="btn secondary small" onclick="openAddRecordModal('${p.id}')">Add visit record</button></div>`;
+  } else if(state.patientTab==='prescriptions'){
+    const rx = prescriptions.filter(r=>r.patientId===p.id).sort((a,b)=>b.date.localeCompare(a.date));
+    body = rx.map(r=>`
+      <div style="padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;">
+        <div><strong class="mono">${r.id}</strong> — ${fmtDateShort(r.date)} · ${r.meds.map(m=>m.name).join(', ')}</div>
+        <button class="btn ghost small" onclick="setView('prescriptions',{rxPatientId:'${p.id}'})">View</button>
+      </div>`).join('') || '<div class="empty"><p>No prescriptions on file.</p></div>';
+    body += `<div style="margin-top:14px;"><button class="btn secondary small" onclick="setView('prescriptions',{rxPatientId:'${p.id}'})">Write new prescription</button></div>`;
+  } else if(state.patientTab==='billing'){
+    const inv = invoices.filter(i=>i.patientId===p.id).sort((a,b)=>b.date.localeCompare(a.date));
+    body = inv.map(i=>`
+      <div style="padding:10px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;">
+        <div><strong class="mono">${i.id}</strong> — ${fmtDateShort(i.date)} · ${money(invoiceTotal(i))}</div>
+        <span class="pill ${i.status}">${i.status}</span>
+      </div>`).join('') || '<div class="empty"><p>No invoices on file.</p></div>';
+  }
+
+  const content = `
+    <div class="panel" style="margin-bottom:16px;">
+      <button class="btn ghost small" onclick="setView('patients')">&larr; All patients</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+        <div>
+          <h2 style="font-size:19px;">${p.name}</h2>
+          <div class="muted" style="font-size:12.5px;">${p.id} · ${age(p.dob)} yrs · ${p.sex} · ${p.blood}${p.allergies.length? ' · Allergic to '+p.allergies.join(', ') : ''}</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="tabs">${tabs.map(t=>`<div class="tab ${state.patientTab===t?'active':''}" onclick="setView('patientDetail',{selectedPatientId:'${p.id}', patientTab:'${t}'})">${tabLabels[t]}</div>`).join('')}</div>
+      ${body}
+    </div>`;
+  document.getElementById('app').innerHTML = renderShell(content, 'Patient chart');
+  document.getElementById('topbar-action').innerHTML = `<button class="btn" onclick="openNewAppointmentModal('${p.id}')">Book appointment</button>`;
+}
+
+function openAddRecordModal(patientId){
+  openModal(`
+    <div class="modal-head"><h2>Add visit record</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <form onsubmit="submitAddRecord(event, '${patientId}')">
+      <div class="field"><label>Attending doctor</label><select id="rec-doc">${DOCTORS.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+      <div class="field-row">
+        <div class="field"><label>Blood pressure</label><input id="rec-bp" placeholder="120/80"></div>
+        <div class="field"><label>Heart rate (bpm)</label><input id="rec-hr" placeholder="76"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Temperature (°F)</label><input id="rec-temp" placeholder="98.6"></div>
+        <div class="field"><label>Weight (lb)</label><input id="rec-weight" placeholder="150"></div>
+      </div>
+      <div class="field"><label>Diagnosis</label><input required id="rec-diag"></div>
+      <div class="field"><label>Notes</label><textarea id="rec-notes" rows="3"></textarea></div>
+      <div class="modal-foot">
+        <button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn accent">Save record</button>
+      </div>
+    </form>`);
+}
+function submitAddRecord(e, patientId){
+  e.preventDefault();
+  records.push({
+    id:'REC-'+String(nextIds.rec++).padStart(3,'0'), patientId, doctorId:document.getElementById('rec-doc').value, date:TODAY,
+    vitals:{bp:document.getElementById('rec-bp').value||'—', hr:document.getElementById('rec-hr').value||'—', temp:document.getElementById('rec-temp').value||'—', weight:document.getElementById('rec-weight').value||'—'},
+    diagnosis:document.getElementById('rec-diag').value, notes:document.getElementById('rec-notes').value,
+  });
+  const idx = PATIENTS.findIndex(p=>p.id===patientId); if(idx>-1) PATIENTS[idx].lastVisit = TODAY;
+  closeModal();
+  setView('patientDetail',{selectedPatientId:patientId, patientTab:'records'});
+}
+
+/* ---------------------------------------------------------------
+   DOCTORS
+---------------------------------------------------------------- */
+function renderDoctors(){
+  const cards = DOCTORS.map(d=>{
+    const initials = d.name.replace('Dr. ','').split(' ').map(w=>w[0]).join('');
+    return `<div class="doctor-card" style="border-left-color:${d.color}">
+      <div class="avatar" style="background:${d.color}">${initials}</div>
+      <div class="name">${d.name}</div>
+      <div class="spec">${d.specialty} · ${d.patientsToday} today</div>
+      <div class="avail-row">${d.avail.map((on,i)=>`<div class="avail-chip ${on?'on':''}">${DAY_NAMES[i]}</div>`).join('')}</div>
+    </div>`;
+  }).join('');
+  const content = `<div class="doctor-grid">${cards}</div>`;
+  document.getElementById('app').innerHTML = renderShell(content, 'Doctors', DOCTORS.length + ' clinicians on staff');
+  document.getElementById('topbar-action').innerHTML = `<button class="btn accent" onclick="openAddDoctorModal()">Add doctor</button>`;
+}
+function openAddDoctorModal(){
+  openModal(`
+    <div class="modal-head"><h2>Add doctor</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <form onsubmit="submitAddDoctor(event)">
+      <div class="field"><label>Full name</label><input required id="nd-name" placeholder="Dr. Jordan Fields"></div>
+      <div class="field"><label>Specialty</label><input required id="nd-spec" placeholder="Internal Medicine"></div>
+      <div class="field"><label>Available days</label>
+        <div class="avail-row">${DAY_NAMES.map((d,i)=>`<label style="display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;"><input type="checkbox" id="nd-day-${i}" ${i<5?'checked':''} style="width:auto;">${d}</label>`).join('')}</div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn accent">Add doctor</button>
+      </div>
+    </form>`);
+}
+function submitAddDoctor(e){
+  e.preventDefault();
+  const palette = ['#2C5F4F','#4C8B6F','#B8863A','#7C6AA0','#456E93','#8A6B5C'];
+  const color = palette[DOCTORS.length % palette.length];
+  const avail = DAY_NAMES.map((d,i)=>document.getElementById('nd-day-'+i).checked?1:0);
+  DOCTORS.push({id:'DR-'+String(DOCTORS.length+1).padStart(2,'0'), name:document.getElementById('nd-name').value.trim(), specialty:document.getElementById('nd-spec').value.trim(), color, tint:'#eee', avail, patientsToday:0});
+  closeModal();
+  setView('doctors');
+}
+
+/* ---------------------------------------------------------------
+   APPOINTMENTS (weekly calendar)
+---------------------------------------------------------------- */
+const CAL_START_HOUR = 8, CAL_END_HOUR = 18;
+function timeToOffset(t){ const [h,m]=t.split(':').map(Number); return (h-CAL_START_HOUR)*56 + (m/60)*56; }
+function durationHeight(start,end){ const [h1,m1]=start.split(':').map(Number),[h2,m2]=end.split(':').map(Number); return ((h2*60+m2)-(h1*60+m1))/60*56 - 3; }
+
+function renderAppointments(){
+  const days = [0,1,2,3,4,5,6].map(i=>addDays(state.weekStart,i));
+  const hours = []; for(let h=CAL_START_HOUR; h<CAL_END_HOUR; h++) hours.push(h);
+
+  const head = `<div class="cal-corner"></div>` + days.map(d=>`<div class="cal-head ${d===TODAY?'today':''}"><div>${DAY_NAMES[(new Date(d+'T00:00:00').getDay()+6)%7]}</div><div class="d">${new Date(d+'T00:00:00').getDate()}</div></div>`).join('');
+
+  const timeCol = `<div class="cal-time-col">${hours.map(h=>`<div class="cal-time">${h>12?h-12:h}${h>=12?'pm':'am'}</div>`).join('')}</div>`;
+
+  const dayCols = days.map(d=>{
+    const dayAppts = appointments.filter(a=>a.date===d);
+    const blocks = dayAppts.map(a=>{
+      const doc = findDoctor(a.doctorId), pat = findPatient(a.patientId);
+      return `<div class="appt-block ${a.status==='cancelled'?'cancelled':''}" style="top:${timeToOffset(a.start)}px;height:${durationHeight(a.start,a.end)}px;background:${doc.color}" onclick="openAppointmentDetail('${a.id}')">
+        <div class="t">${a.start} ${pat.name}</div><div class="p">${a.reason}</div>
+      </div>`;
+    }).join('');
+    return `<div class="cal-day-col" style="height:${(CAL_END_HOUR-CAL_START_HOUR)*56}px;">${blocks}</div>`;
+  }).join('');
+
+  const content = `
+    <div class="panel">
+      <div class="cal-toolbar">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn ghost small" onclick="setView('appointments',{weekStart:addDays(state.weekStart,-7)})">&larr; Prev</button>
+          <strong style="font-size:13.5px;">${fmtDateShort(days[0])} – ${fmtDateShort(days[6])}, 2026</strong>
+          <button class="btn ghost small" onclick="setView('appointments',{weekStart:addDays(state.weekStart,7)})">Next &rarr;</button>
+        </div>
+        <button class="btn ghost small" onclick="setView('appointments',{weekStart:'2026-09-14'})">This week</button>
+      </div>
+      <div class="cal-grid">${head}${timeCol}${dayCols}</div>
+    </div>`;
+  document.getElementById('app').innerHTML = renderShell(content, 'Appointments');
+  document.getElementById('topbar-action').innerHTML = `<button class="btn accent" onclick="openNewAppointmentModal()">New appointment</button>`;
+}
+
+function openNewAppointmentModal(patientId){
+  openModal(`
+    <div class="modal-head"><h2>New appointment</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <form onsubmit="submitNewAppointment(event)">
+      <div class="field"><label>Patient</label><select id="na-patient">${PATIENTS.map(p=>`<option value="${p.id}" ${p.id===patientId?'selected':''}>${p.name} (${p.id})</option>`).join('')}</select></div>
+      <div class="field"><label>Doctor</label><select id="na-doctor">${DOCTORS.map(d=>`<option value="${d.id}">${d.name} — ${d.specialty}</option>`).join('')}</select></div>
+      <div class="field-row">
+        <div class="field"><label>Date</label><input type="date" id="na-date" value="${TODAY}"></div>
+        <div class="field"><label>Start time</label><input type="time" id="na-start" value="09:00"></div>
+      </div>
+      <div class="field"><label>Reason for visit</label><input required id="na-reason" placeholder="e.g. Follow-up consultation"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn accent">Book appointment</button>
+      </div>
+    </form>`);
+}
+function submitNewAppointment(e){
+  e.preventDefault();
+  const start = document.getElementById('na-start').value;
+  const [h,m] = start.split(':').map(Number);
+  const endDate = new Date(2000,0,1,h,m+30);
+  const end = String(endDate.getHours()).padStart(2,'0')+':'+String(endDate.getMinutes()).padStart(2,'0');
+  appointments.push({id:'AP-'+String(nextIds.appt++).padStart(3,'0'), patientId:document.getElementById('na-patient').value, doctorId:document.getElementById('na-doctor').value, date:document.getElementById('na-date').value, start, end, reason:document.getElementById('na-reason').value, status:'scheduled'});
+  closeModal();
+  setView('appointments');
+}
+function openAppointmentDetail(id){
+  const a = appointments.find(x=>x.id===id); const doc=findDoctor(a.doctorId), pat=findPatient(a.patientId);
+  openModal(`
+    <div class="modal-head"><h2>${a.reason}</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <div class="detail-grid">
+      <div><div class="k">Patient</div>${pat.name}</div>
+      <div><div class="k">Doctor</div>${doc.name}</div>
+      <div><div class="k">Date</div>${fmtDateLong(a.date)}</div>
+      <div><div class="k">Time</div>${a.start} – ${a.end}</div>
+      <div><div class="k">Status</div><span class="pill ${a.status}">${a.status.replace('-',' ')}</span></div>
+    </div>
+    <div class="modal-foot">
+      ${a.status!=='completed'&&a.status!=='cancelled'?`<button class="btn danger" onclick="updateApptStatus('${id}','cancelled')">Cancel visit</button>`:''}
+      ${a.status==='scheduled'?`<button class="btn secondary" onclick="updateApptStatus('${id}','checked-in')">Check in</button>`:''}
+      ${a.status==='checked-in'?`<button class="btn accent" onclick="updateApptStatus('${id}','completed')">Mark completed</button>`:''}
+      <button class="btn ghost" onclick="closeModal()">Close</button>
+    </div>`);
+}
+function updateApptStatus(id, status){
+  const a = appointments.find(x=>x.id===id); if(a) a.status=status;
+  closeModal();
+  render();
+}
+
+/* ---------------------------------------------------------------
+   RECORDS (index view)
+---------------------------------------------------------------- */
+function renderRecords(){
+  const q = (state.recordSearch||'').toLowerCase();
+  const list = PATIENTS.filter(p=>p.name.toLowerCase().includes(q));
+  const rows = list.map(p=>{
+    const recs = records.filter(r=>r.patientId===p.id);
+    const last = recs.sort((a,b)=>b.date.localeCompare(a.date))[0];
+    return `<tr class="clickable" onclick="setView('patientDetail',{selectedPatientId:'${p.id}', patientTab:'records'})">
+      <td class="mono">${p.id}</td><td>${p.name}</td><td>${recs.length}</td><td>${last?fmtDateShort(last.date):'—'}</td><td>${last?last.diagnosis:'—'}</td>
+    </tr>`;
+  }).join('');
+  const content = `
+    <div class="panel">
+      <div class="toolbar"><input class="search-box" placeholder="Search patient" oninput="state.recordSearch=this.value; renderRecords();"></div>
+      <table class="data-table"><thead><tr><th>Patient ID</th><th>Name</th><th>Visits on file</th><th>Last visit</th><th>Most recent diagnosis</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>`;
+  document.getElementById('app').innerHTML = renderShell(content, 'Patient records', 'Select a patient to view full visit history');
+  document.getElementById('topbar-action').innerHTML='';
+}
+
+/* ---------------------------------------------------------------
+   PRESCRIPTIONS
+---------------------------------------------------------------- */
+function renderPrescriptions(){
+  const patientId = state.rxPatientId || PATIENTS[0].id;
+  const p = findPatient(patientId);
+  const history = prescriptions.filter(r=>r.patientId===patientId).sort((a,b)=>b.date.localeCompare(a.date));
+
+  const content = `
+    <div class="two-col">
+      <div class="panel">
+        <h2>Write a prescription</h2>
+        <div class="field"><label>Patient</label><select onchange="setView('prescriptions',{rxPatientId:this.value})">${PATIENTS.map(pt=>`<option value="${pt.id}" ${pt.id===patientId?'selected':''}>${pt.name} (${pt.id})</option>`).join('')}</select></div>
+        ${p.allergies.length?`<div style="background:var(--alert-tint);color:var(--alert);padding:8px 10px;border-radius:5px;font-size:12.5px;margin-bottom:12px;">Allergic to ${p.allergies.join(', ')}</div>`:''}
+        <div class="field"><label>Prescribing doctor</label><select id="rx-doc">${DOCTORS.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+        <div id="rx-meds">
+          <div class="med-line"><input placeholder="Medication" class="rx-med-name"><input placeholder="Dosage" class="rx-med-dose"><input placeholder="Frequency" class="rx-med-freq"><input placeholder="Duration" class="rx-med-dur"><button type="button" class="remove-x" onclick="this.closest('.med-line').remove()">&times;</button></div>
+        </div>
+        <button type="button" class="btn ghost small" onclick="addMedLine()">+ Add medication</button>
+        <div class="field" style="margin-top:14px;"><label>Notes for patient</label><textarea id="rx-notes" rows="2"></textarea></div>
+        <button class="btn accent" onclick="submitPrescription('${patientId}')">Generate prescription</button>
+      </div>
+      <div>
+        <h2 style="font-size:15px;margin-bottom:10px;">History for ${p.name}</h2>
+        ${history.map(r=>`<div class="rx-pad" style="margin-bottom:14px;">
+          <div class="rx-head"><div><div class="clinic">Meridian Clinic</div><div class="sub">${findDoctor(r.doctorId).name}</div></div><div class="rx-symbol">℞</div></div>
+          <div class="rx-body">
+            <div class="rx-meta"><span>${p.name} · ${p.id}</span><span class="mono">${r.id} · ${fmtDateShort(r.date)}</span></div>
+            ${r.meds.map(m=>`<div class="rx-med-row"><span class="name">${m.name} ${m.dosage}</span><span class="dose">${m.frequency}, ${m.duration}</span></div>`).join('')}
+            ${r.notes?`<div class="muted" style="font-size:12.5px;margin-top:10px;">${r.notes}</div>`:''}
+            <div class="rx-sign"><div class="line">Physician signature</div><button class="btn ghost small" onclick="window.print()">Print</button></div>
+          </div>
+        </div>`).join('') || '<div class="panel"><div class="empty"><p>No prescriptions on file for this patient.</p></div></div>'}
+      </div>
+    </div>`;
+  document.getElementById('app').innerHTML = renderShell(content, 'Prescriptions');
+  document.getElementById('topbar-action').innerHTML='';
+}
+function addMedLine(){
+  const wrap = document.getElementById('rx-meds');
+  const div = document.createElement('div'); div.className='med-line';
+  div.innerHTML = `<input placeholder="Medication" class="rx-med-name"><input placeholder="Dosage" class="rx-med-dose"><input placeholder="Frequency" class="rx-med-freq"><input placeholder="Duration" class="rx-med-dur"><button type="button" class="remove-x" onclick="this.closest('.med-line').remove()">&times;</button>`;
+  wrap.appendChild(div);
+}
+function submitPrescription(patientId){
+  const lines = Array.from(document.querySelectorAll('#rx-meds .med-line'));
+  const meds = lines.map(l=>({
+    name: l.querySelector('.rx-med-name').value.trim(),
+    dosage: l.querySelector('.rx-med-dose').value.trim(),
+    frequency: l.querySelector('.rx-med-freq').value.trim(),
+    duration: l.querySelector('.rx-med-dur').value.trim(),
+  })).filter(m=>m.name);
+  if(!meds.length){ alert('Add at least one medication.'); return; }
+  prescriptions.push({id:'RX-'+String(nextIds.rx++).padStart(4,'0'), patientId, doctorId:document.getElementById('rx-doc').value, date:TODAY, meds, notes:document.getElementById('rx-notes').value});
+  setView('prescriptions',{rxPatientId:patientId});
+}
+
+/* ---------------------------------------------------------------
+   BILLING & PAYMENTS
+---------------------------------------------------------------- */
+function renderBilling(){
+  const filter = state.billingFilter;
+  const list = invoices.filter(i=> filter==='all' || i.status===filter).sort((a,b)=>b.date.localeCompare(a.date));
+  const filters = ['all','pending','overdue','paid'];
+
+  const rows = list.map(i=>{
+    const pat = findPatient(i.patientId), total=invoiceTotal(i), paid=invoicePaid(i);
+    return `<tr class="clickable" onclick="openInvoiceDetail('${i.id}')">
+      <td class="mono">${i.id}</td><td>${pat.name}</td><td>${fmtDateShort(i.date)}</td><td class="mono">${money(total)}</td><td><span class="pill ${i.status}">${i.status}</span></td>
+    </tr>`;
+  }).join('');
+
+  const paymentRows = payments.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(pm=>{
+    const inv = invoices.find(i=>i.id===pm.invoiceId);
+    return `<tr><td class="mono">${pm.id}</td><td>${inv?findPatient(inv.patientId).name:'—'}</td><td>${fmtDateShort(pm.date)}</td><td class="mono">${money(pm.amount)}</td><td>${pm.method}</td></tr>`;
+  }).join('');
+
+  const content = `
+    <div class="panel" style="margin-bottom:18px;">
+      <div class="toolbar">
+        <div class="tabs" style="margin-bottom:0;border-bottom:none;">${filters.map(f=>`<div class="tab ${filter===f?'active':''}" onclick="setView('billing',{billingFilter:'${f}'})">${f[0].toUpperCase()+f.slice(1)}</div>`).join('')}</div>
+      </div>
+      <table class="data-table"><thead><tr><th>Invoice</th><th>Patient</th><th>Date</th><th>Amount</th><th>Status</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="5"><div class="empty"><p>No invoices in this view.</p></div></td></tr>'}</tbody></table>
+    </div>
+    <div class="panel">
+      <h2>Payment history</h2>
+      <table class="data-table"><thead><tr><th>Payment</th><th>Patient</th><th>Date</th><th>Amount</th><th>Method</th></tr></thead>
+      <tbody>${paymentRows || '<tr><td colspan="5"><div class="empty"><p>No payments recorded yet.</p></div></td></tr>'}</tbody></table>
+    </div>`;
+  document.getElementById('app').innerHTML = renderShell(content, 'Billing & payments');
+  document.getElementById('topbar-action').innerHTML = `<button class="btn accent" onclick="openNewInvoiceModal()">New invoice</button>`;
+}
+
+function openNewInvoiceModal(){
+  openModal(`
+    <div class="modal-head"><h2>New invoice</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <div class="field"><label>Patient</label><select id="inv-patient">${PATIENTS.map(p=>`<option value="${p.id}">${p.name} (${p.id})</option>`).join('')}</select></div>
+    <div class="field"><label>Doctor</label><select id="inv-doctor">${DOCTORS.map(d=>`<option value="${d.id}">${d.name}</option>`).join('')}</select></div>
+    <div id="inv-items">
+      <div class="item-line"><input placeholder="Line item" class="inv-item-desc"><input placeholder="Amount" type="number" class="inv-item-amt" oninput="recalcInvoiceTotal()"><button type="button" class="remove-x" onclick="this.closest('.item-line').remove(); recalcInvoiceTotal();">&times;</button></div>
+    </div>
+    <button type="button" class="btn ghost small" onclick="addInvoiceLine()">+ Add line item</button>
+    <div class="total-row"><span>Total</span><span class="mono" id="inv-total-display">$0.00</span></div>
+    <div class="modal-foot">
+      <button type="button" class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button type="button" class="btn accent" onclick="submitNewInvoice()">Create invoice</button>
+    </div>`);
+}
+function addInvoiceLine(){
+  const wrap = document.getElementById('inv-items');
+  const div = document.createElement('div'); div.className='item-line';
+  div.innerHTML = `<input placeholder="Line item" class="inv-item-desc"><input placeholder="Amount" type="number" class="inv-item-amt" oninput="recalcInvoiceTotal()"><button type="button" class="remove-x" onclick="this.closest('.item-line').remove(); recalcInvoiceTotal();">&times;</button>`;
+  wrap.appendChild(div);
+}
+function recalcInvoiceTotal(){
+  const amts = Array.from(document.querySelectorAll('.inv-item-amt')).map(i=>Number(i.value)||0);
+  document.getElementById('inv-total-display').textContent = money(amts.reduce((a,b)=>a+b,0));
+}
+function submitNewInvoice(){
+  const descs = Array.from(document.querySelectorAll('.inv-item-desc'));
+  const amts = Array.from(document.querySelectorAll('.inv-item-amt'));
+  const items = descs.map((d,i)=>({desc:d.value.trim(), amount:Number(amts[i].value)||0})).filter(it=>it.desc && it.amount>0);
+  if(!items.length){ alert('Add at least one line item with an amount.'); return; }
+  invoices.push({id:'INV-'+String(nextIds.inv++).padStart(4,'0'), patientId:document.getElementById('inv-patient').value, doctorId:document.getElementById('inv-doctor').value, date:TODAY, items, status:'pending'});
+  closeModal();
+  setView('billing',{billingFilter:'all'});
+}
+
+function openInvoiceDetail(id){
+  const inv = invoices.find(i=>i.id===id); const pat=findPatient(inv.patientId), total=invoiceTotal(inv), paid=invoicePaid(inv), balance=total-paid;
+  openModal(`
+    <div class="modal-head"><h2>Invoice ${inv.id}</h2><button class="modal-close" onclick="closeModal()">&times;</button></div>
+    <div class="detail-grid">
+      <div><div class="k">Patient</div>${pat.name}</div>
+      <div><div class="k">Date</div>${fmtDateShort(inv.date)}</div>
+      <div><div class="k">Doctor</div>${findDoctor(inv.doctorId).name}</div>
+      <div><div class="k">Status</div><span class="pill ${inv.status}">${inv.status}</span></div>
+    </div>
+    <div style="margin:14px 0;border-top:1px solid var(--line);padding-top:10px;">
+      ${inv.items.map(it=>`<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13.5px;"><span>${it.desc}</span><span class="mono">${money(it.amount)}</span></div>`).join('')}
+    </div>
+    <div class="total-row"><span>Balance due</span><span class="mono">${money(balance)}</span></div>
+    ${balance>0?`
+    <div class="field" style="margin-top:16px;"><label>Record payment</label>
+      <div style="display:flex;gap:8px;">
+        <input type="number" id="pay-amt" placeholder="Amount" value="${balance}">
+        <select id="pay-method"><option>Card</option><option>Cash</option><option>Insurance</option></select>
+      </div>
+    </div>
+    <div class="modal-foot"><button class="btn ghost" onclick="closeModal()">Close</button><button class="btn accent" onclick="submitPayment('${inv.id}')">Record payment</button></div>
+    `:`<div class="modal-foot"><button class="btn ghost" onclick="closeModal()">Close</button></div>`}
+  `);
+}
+function submitPayment(invoiceId){
+  const amt = Number(document.getElementById('pay-amt').value)||0;
+  if(amt<=0){ closeModal(); return; }
+  payments.push({id:'PMT-'+String(nextIds.pmt++).padStart(3,'0'), invoiceId, date:TODAY, amount:amt, method:document.getElementById('pay-method').value});
+  const inv = invoices.find(i=>i.id===invoiceId);
+  const total = invoiceTotal(inv), paidNow = invoicePaid(inv);
+  inv.status = paidNow >= total ? 'paid' : 'pending';
+  closeModal();
+  setView('billing',{billingFilter:state.billingFilter});
+}
+
+/* ---------------------------------------------------------------
+   ROUTER
+---------------------------------------------------------------- */
+function render(){
+  if(state.view==='dashboard') renderDashboard();
+  else if(state.view==='patients') renderPatients();
+  else if(state.view==='patientDetail') renderPatientDetail();
+  else if(state.view==='doctors') renderDoctors();
+  else if(state.view==='appointments') renderAppointments();
+  else if(state.view==='records') renderRecords();
+  else if(state.view==='prescriptions') renderPrescriptions();
+  else if(state.view==='billing') renderBilling();
+  else renderDashboard();
+}
+render();
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script><script type="text/javascript">function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: "en",includedLanguages: "zh-CN,en",layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, "google_translate_element");}</script>
+<div id="google_translate_element"></div>
+<script>(function(){function applyTranslation(){var saved=localStorage.getItem("lang_pref");if(saved==="zh"){var sel=document.querySelector(".goog-te-combo");if(sel){sel.value="zh-CN";var e=new Event("change");sel.dispatchEvent(e);}}}function adjustForTranslateBanner(){var banner=document.querySelector(".goog-te-banner-frame");var header=document.querySelector("header");var dd=document.getElementById("google_translate_element");var bannerH=banner&&banner.offsetHeight>0?banner.offsetHeight:0;if(header){header.style.position="sticky";header.style.top=bannerH+"px";}if(dd){dd.style.top=(62+bannerH)+"px";}if(document.body){document.body.style.marginTop=bannerH+"px";}}var observer=new MutationObserver(function(){adjustForTranslateBanner();});observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class"]});window.addEventListener("resize",adjustForTranslateBanner);setTimeout(function(){adjustForTranslateBanner();applyTranslation();},500);setInterval(adjustForTranslateBanner,2000);})();</script></body>
+</html>

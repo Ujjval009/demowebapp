@@ -1,0 +1,17 @@
+export const initialAppointments = [
+  { id: "A-001", time: "09:00", patient: "Meera Kulkarni", patientId: "P-1042", doctor: "Dr. Sana Iyer", doctorId: "D-001", dept: "Cardiology", day: "Mon", date: "2026-09-08", status: "Completed", reason: "Cardiac follow-up" },
+  { id: "A-002", time: "09:30", patient: "Rohit Verma", patientId: "P-1043", doctor: "Dr. Sana Iyer", doctorId: "D-001", dept: "Cardiology", day: "Mon", date: "2026-09-08", status: "Completed", reason: "Blood pressure check" },
+  { id: "A-003", time: "10:00", patient: "Vikram Chauhan", patientId: "P-1053", doctor: "Dr. Sana Iyer", doctorId: "D-001", dept: "Cardiology", day: "Mon", date: "2026-09-08", status: "Scheduled", reason: "ECG review" },
+  { id: "A-004", time: "10:30", patient: "Rohit Verma", patientId: "P-1043", doctor: "Dr. Arjun Rao", doctorId: "D-002", dept: "Orthopedics", day: "Mon", date: "2026-09-08", status: "Scheduled", reason: "Knee pain consultation" },
+  { id: "A-005", time: "11:00", patient: "Kavya Singh", patientId: "P-1050", doctor: "Dr. Priya Chopra", doctorId: "D-007", dept: "Dermatology", day: "Mon", date: "2026-09-08", status: "Scheduled", reason: "Skin allergy follow-up" },
+  { id: "A-006", time: "11:30", patient: "Deepa Iyer", patientId: "P-1052", doctor: "Dr. Amit Verma", doctorId: "D-008", dept: "ENT", day: "Mon", date: "2026-09-08", status: "Scheduled", reason: "Post-surgery check" },
+  { id: "A-007", time: "09:00", patient: "Priya Nair", patientId: "P-1044", doctor: "Dr. Leela Menon", doctorId: "D-003", dept: "Obstetrics", day: "Tue", date: "2026-09-09", status: "Scheduled", reason: "Prenatal checkup" },
+  { id: "A-008", time: "09:30", patient: "Devansh Gupta", patientId: "P-1045", doctor: "Dr. Kabir Shah", doctorId: "D-004", dept: "Pediatrics", day: "Tue", date: "2026-09-09", status: "Scheduled", reason: "Fever follow-up" },
+  { id: "A-009", time: "10:00", patient: "Sunita Reddy", patientId: "P-1048", doctor: "Dr. Ravi Deshmukh", doctorId: "D-006", dept: "General Medicine", day: "Tue", date: "2026-09-09", status: "Scheduled", reason: "Diabetes management" },
+  { id: "A-010", time: "10:30", patient: "Manish Tiwari", patientId: "P-1051", doctor: "Dr. Nisha Kapoor", doctorId: "D-005", dept: "Neurology", day: "Tue", date: "2026-09-09", status: "Scheduled", reason: "Stroke recovery assessment" },
+  { id: "A-011", time: "11:00", patient: "Anita Bose", patientId: "P-1046", doctor: "Dr. Arjun Rao", doctorId: "D-002", dept: "Orthopedics", day: "Wed", date: "2026-09-10", status: "Cancelled", reason: "Post-op hip review" },
+  { id: "A-012", time: "14:00", patient: "Farhan Sheikh", patientId: "P-1047", doctor: "Dr. Rajesh Mehta", doctorId: "D-010", dept: "ICU", day: "Wed", date: "2026-09-10", status: "Scheduled", reason: "Ventilator weaning trial" },
+  { id: "A-013", time: "14:30", patient: "Arjun Patel", patientId: "P-1049", doctor: "Dr. Ravi Deshmukh", doctorId: "D-006", dept: "General Medicine", day: "Wed", date: "2026-09-10", status: "Scheduled", reason: "Dengue platelet count check" },
+  { id: "A-014", time: "09:00", patient: "Kavya Singh", patientId: "P-1050", doctor: "Dr. Kavita Joshi", doctorId: "D-009", dept: "Ophthalmology", day: "Thu", date: "2026-09-11", status: "Scheduled", reason: "Routine eye exam" },
+  { id: "A-015", time: "10:00", patient: "Priya Nair", patientId: "P-1044", doctor: "Dr. Leela Menon", doctorId: "D-003", dept: "Obstetrics", day: "Thu", date: "2026-09-11", status: "Scheduled", reason: "Ultrasound appointment" },
+];

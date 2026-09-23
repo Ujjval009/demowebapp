@@ -1,0 +1,14 @@
+export const initialLabTests = [
+  { id: "LAB-001", patient: "Meera Kulkarni", patientId: "P-1042", test: "Complete Blood Count (CBC)", doctor: "Dr. Sana Iyer", date: "2026-09-07", status: "Completed", priority: "Urgent", results: "WBC: 12,400/uL (High)\nRBC: 4.2M/uL (Normal)\nHemoglobin: 11.8 g/dL (Low)\nPlatelets: 2,80,000/uL (Normal)" },
+  { id: "LAB-002", patient: "Meera Kulkarni", patientId: "P-1042", test: "Lipid Profile", doctor: "Dr. Sana Iyer", date: "2026-09-07", status: "Completed", priority: "Normal", results: "Total Cholesterol: 245 mg/dL (High)\nLDL: 165 mg/dL (High)\nHDL: 38 mg/dL (Low)\nTriglycerides: 180 mg/dL (High)" },
+  { id: "LAB-003", patient: "Farhan Sheikh", patientId: "P-1047", test: "Blood Gas Analysis", doctor: "Dr. Rajesh Mehta", date: "2026-09-08", status: "In Progress", priority: "Urgent", results: null },
+  { id: "LAB-004", patient: "Devansh Gupta", patientId: "P-1045", test: "Urinalysis", doctor: "Dr. Kabir Shah", date: "2026-09-06", status: "Completed", priority: "Normal", results: "Color: Yellow (Normal)\nSpecific Gravity: 1.015 (Normal)\nWBC: 2-3/HPF (Normal)\nProtein: Negative" },
+  { id: "LAB-005", patient: "Rohit Verma", patientId: "P-1043", test: "ECG", doctor: "Dr. Sana Iyer", date: "2026-09-08", status: "Scheduled", priority: "Normal", results: null },
+  { id: "LAB-006", patient: "Manish Tiwari", patientId: "P-1051", test: "CT Scan Abdomen", doctor: "Dr. Nisha Kapoor", date: "2026-09-07", status: "Completed", priority: "Urgent", results: "No acute intracranial abnormality.\nMild cerebral atrophy noted.\nNo evidence of hemorrhage." },
+  { id: "LAB-007", patient: "Manish Tiwari", patientId: "P-1051", test: "MRI Brain", doctor: "Dr. Nisha Kapoor", date: "2026-09-07", status: "Completed", priority: "Urgent", results: "Acute ischemic infarct in right MCA territory.\nNo midline shift.\nRecommend: Neurosurgical evaluation." },
+  { id: "LAB-008", patient: "Sunita Reddy", patientId: "P-1048", test: "Blood Sugar (Fasting)", doctor: "Dr. Ravi Deshmukh", date: "2026-09-08", status: "Completed", priority: "Normal", results: "Fasting Blood Sugar: 186 mg/dL (High)\nHbA1c: 8.2% (High)" },
+  { id: "LAB-009", patient: "Sunita Reddy", patientId: "P-1048", test: "Kidney Function Test (KFT)", doctor: "Dr. Ravi Deshmukh", date: "2026-09-08", status: "Scheduled", priority: "Normal", results: null },
+  { id: "LAB-010", patient: "Priya Nair", patientId: "P-1044", test: "Thyroid Profile (TSH)", doctor: "Dr. Leela Menon", date: "2026-09-09", status: "Scheduled", priority: "Normal", results: null },
+  { id: "LAB-011", patient: "Arjun Patel", patientId: "P-1049", test: "Complete Blood Count (CBC)", doctor: "Dr. Ravi Deshmukh", date: "2026-09-08", status: "In Progress", priority: "Urgent", results: null },
+  { id: "LAB-012", patient: "Vikram Chauhan", patientId: "P-1053", test: "Echocardiography", doctor: "Dr. Sana Iyer", date: "2026-09-09", status: "Scheduled", priority: "Normal", results: null },
+];

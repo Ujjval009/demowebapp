@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Moon Cakes — Business Overview</title>
+<style>
+  :root{
+    --maroon:#6E2A2A;
+    --maroon-deep:#4E1D1D;
+    --gold:#C79A3D;
+    --cream:#FAF5EC;
+    --card:#FFFFFF;
+    --ink:#2B211C;
+    --ink-soft:#6B5D52;
+    --line:#E7DCC8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--cream);color:var(--ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+  }
+  h1,h2,h3,.display{
+    font-family: Georgia, "Iowan Old Style", serif;
+    margin:0;font-weight:700;
+  }
+  .app{display:flex;min-height:100vh;}
+
+  /* Sidebar: store switcher */
+  .sidebar{
+    width:230px;background:var(--maroon-deep);color:#F4E9D8;
+    padding:26px 20px;flex-shrink:0;
+  }
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:34px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:50%;
+    background:var(--gold);color:var(--maroon-deep);
+    display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,serif;font-weight:700;
+  }
+  .brand-name{font-family:Georgia,serif;font-size:18px;}
+  .side-label{
+    font-size:11.5px;color:#D8B98A;margin:22px 0 10px;
+  }
+  .store-item{
+    padding:11px 12px;border-radius:6px;margin-bottom:6px;
+    cursor:pointer;font-size:14.5px;display:flex;justify-content:space-between;
+    color:#EFE1CC;
+  }
+  .store-item:hover{background:rgba(255,255,255,0.06);}
+  .store-item.active{background:var(--gold);color:var(--maroon-deep);font-weight:600;}
+  .signed-in{
+    margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.15);
+    font-size:13px;color:#D8B98A;
+  }
+  .signed-in b{display:block;color:#F4E9D8;font-size:14.5px;margin-top:2px;}
+  .logout{
+    margin-top:14px;width:100%;padding:9px;border-radius:6px;
+    background:transparent;border:1px solid rgba(255,255,255,0.25);
+    color:#F4E9D8;cursor:pointer;font-size:13px;
+  }
+  .logout:hover{background:rgba(255,255,255,0.08);}
+
+  /* Main */
+  .main{flex:1;padding:34px 42px;}
+  .topline{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;}
+  .topline h1{font-size:28px;}
+  .topline p{color:var(--ink-soft);margin-top:6px;font-size:14.5px;}
+  .settings-btn{
+    border:1px solid var(--line);background:var(--card);
+    padding:9px 16px;border-radius:6px;font-size:13.5px;cursor:pointer;color:var(--ink);
+  }
+  .settings-btn:hover{background:#FBF0DE;}
+
+  .stat-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:30px;
+  }
+  .stat-card{
+    background:var(--card);border:1px solid var(--line);border-radius:8px;
+    padding:20px;
+  }
+  .stat-card .label{font-size:12.5px;color:var(--ink-soft);}
+  .stat-card .value{font-family:Georgia,serif;font-size:26px;margin-top:8px;}
+  .stat-card .delta{font-size:12px;margin-top:6px;}
+  .delta.up{color:#3D7A4C;}
+  .delta.down{color:#A6402E;}
+
+  .panels{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;}
+  .panel{
+    background:var(--card);border:1px solid var(--line);border-radius:8px;padding:22px;
+  }
+  .panel h2{font-size:16px;margin-bottom:16px;}
+  .bars{display:flex;align-items:flex-end;gap:10px;height:140px;}
+  .bar{
+    flex:1;background:linear-gradient(180deg,var(--gold),var(--maroon));
+    border-radius:4px 4px 0 0;position:relative;
+  }
+  .bar span{
+    position:absolute;bottom:-20px;left:0;right:0;text-align:center;
+    font-size:11px;color:var(--ink-soft);
+  }
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{
+    text-align:left;color:var(--ink-soft);font-weight:600;font-size:12px;
+    padding-bottom:10px;border-bottom:1px solid var(--line);
+  }
+  td{padding:10px 0;border-bottom:1px solid var(--line);}
+  .tag{
+    font-size:11px;padding:2px 8px;border-radius:10px;
+    background:#F3E7CE;color:#8A6A2A;
+  }
+
+  /* Settings drawer */
+  .settings-overlay{
+    position:fixed;inset:0;background:rgba(43,33,28,.35);opacity:0;pointer-events:none;
+    transition:opacity .2s;z-index:9;
+  }
+  .settings-overlay.open{opacity:1;pointer-events:auto;}
+  .settings-panel{
+    position:fixed;top:0;right:0;bottom:0;width:340px;background:var(--card);
+    transform:translateX(100%);transition:transform .25s ease;z-index:10;
+    padding:26px;border-left:1px solid var(--line);
+  }
+  .settings-panel.open{transform:translateX(0);}
+  .settings-panel h3{font-size:18px;margin-bottom:18px;}
+  .settings-row{
+    display:flex;justify-content:space-between;padding:10px 0;
+    border-bottom:1px solid var(--line);font-size:13.5px;
+  }
+  .close-x{
+    float:right;border:none;background:none;font-size:16px;cursor:pointer;color:var(--ink-soft);
+  }
+<style>.goog-te-banner-frame{position:fixed!important;top:0!important;left:0!important;width:100%!important;z-index:2147483647!important;}.goog-te-banner-frame.skiptranslate{display:none!important;}.goog-te-menu-frame{font-family:ui-sans-serif,sans-serif!important;}body{transition:margin-top .3s ease;}#google_translate_element{position:fixed;top:14px;right:14px;z-index:99999;}#google_translate_element .goog-te-combo{padding:8px 16px;border-radius:999px;border:2px solid rgba(255,255,255,.6);background:rgba(30,40,60,.85);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:ui-sans-serif,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.3);backdrop-filter:blur(10px);appearance:none;-webkit-appearance:none;}#google_translate_element .goog-te-combo:hover{background:rgba(30,40,60,.95);transform:scale(1.05);}#google_translate_element .goog-te-combo:focus{outline:2px solid var(--teal, #2F7A6D);outline-offset:2px;}</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">🥮</div>
+      <div class="brand-name">Moon Cakes</div>
+    </div>
+
+    <div class="side-label">SELECT A STORE TO MANAGE</div>
+    <div id="store-list"></div>
+
+    <div class="signed-in">
+      Signed in as
+      <b>Wei Lin</b>
+    </div>
+    <button class="logout" id="logout-btn">↩ Logout</button>
+  </div>
+
+  <div class="main">
+    <div class="topline">
+      <div>
+        <h1 id="store-heading">Business Overview</h1>
+        <p id="store-sub">Mid-Autumn season performance across all branches</p>
+      </div>
+      <button class="settings-btn" id="settings-open">⚙ Account &amp; System Settings</button>
+    </div>
+
+    <div class="stat-grid" id="stat-grid"></div>
+
+    <div class="panels">
+      <div class="panel">
+        <h2>Sales, last 7 days</h2>
+        <div class="bars" id="bars"></div>
+      </div>
+      <div class="panel">
+        <h2>Available Shops</h2>
+        <table>
+          <thead><tr><th>Store</th><th>Today</th><th>Status</th></tr></thead>
+          <tbody id="shops-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="settings-overlay" id="settings-overlay"></div>
+<div class="settings-panel" id="settings-panel">
+  <button class="close-x" id="settings-close">✕</button>
+  <h3>Account &amp; System Settings</h3>
+  <div class="settings-row"><span>Business name</span><span>Moon Cakes Co.</span></div>
+  <div class="settings-row"><span>Currency</span><span>USD</span></div>
+  <div class="settings-row"><span>Tax rate</span><span>7%</span></div>
+  <div class="settings-row"><span>Receipt footer</span><span>Enabled</span></div>
+  <div class="settings-row"><span>Low-stock alerts</span><span>Enabled</span></div>
+</div>
+
+<script>
+const stores = [
+  { id:'all',  name:'All Stores',      today:2840, month:58120, customers:412, products:36 },
+  { id:'downtown', name:'Downtown',    today:1120, month:23940, customers:168, products:22 },
+  { id:'harbor',   name:'Harbor Mall', today:940,  month:19310, customers:141, products:19 },
+  { id:'east',     name:'East Plaza',  today:780,  month:14870, customers:103, products:17 },
+];
+
+const weekly = {
+  all:      [820,940,1010,880,1240,1610,2840],
+  downtown: [310,360,400,340,480,610,1120],
+  harbor:   [260,300,330,290,410,520,940],
+  east:     [250,280,280,250,350,480,780],
+};
+
+let current = 'all';
+
+const storeList = document.getElementById('store-list');
+function renderStoreList(){
+  storeList.innerHTML='';
+  stores.forEach(s=>{
+    const el = document.createElement('div');
+    el.className = 'store-item' + (s.id===current?' active':'');
+    el.innerHTML = `<span>${s.name}</span>`;
+    el.addEventListener('click',()=>{ current=s.id; renderAll(); });
+    storeList.appendChild(el);
+  });
+}
+
+const statGrid = document.getElementById('stat-grid');
+function renderStats(){
+  const s = stores.find(x=>x.id===current);
+  const fmt = n => '$'+n.toLocaleString();
+  statGrid.innerHTML = `
+    <div class="stat-card"><div class="label">Today</div><div class="value">${fmt(s.today)}</div><div class="delta up">▲ 8.2% vs yesterday</div></div>
+    <div class="stat-card"><div class="label">This Month</div><div class="value">${fmt(s.month)}</div><div class="delta up">▲ 14.6% vs last month</div></div>
+    <div class="stat-card"><div class="label">Customers</div><div class="value">${s.customers}</div><div class="delta up">▲ 22 new this week</div></div>
+    <div class="stat-card"><div class="label">Products</div><div class="value">${s.products}</div><div class="delta down">▼ 2 low stock</div></div>
+  `;
+}
+
+const barsEl = document.getElementById('bars');
+function renderBars(){
+  const data = weekly[current];
+  const max = Math.max(...data);
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  barsEl.innerHTML = data.map((v,i)=>`
+    <div class="bar" style="height:${(v/max*100)}%">
+      <span>${days[i]}</span>
+    </div>
+  `).join('');
+}
+
+const shopsTable = document.getElementById('shops-table');
+function renderShops(){
+  shopsTable.innerHTML = stores.filter(s=>s.id!=='all').map(s=>`
+    <tr>
+      <td>${s.name}</td>
+      <td>$${s.today.toLocaleString()}</td>
+      <td><span class="tag">Open</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderHeading(){
+  const s = stores.find(x=>x.id===current);
+  document.getElementById('store-heading').textContent =
+    current==='all' ? 'Business Overview' : s.name + ' — Overview';
+}
+
+function renderAll(){
+  renderStoreList();
+  renderStats();
+  renderBars();
+  renderShops();
+  renderHeading();
+}
+renderAll();
+
+// Settings drawer
+const settingsOverlay = document.getElementById('settings-overlay');
+const settingsPanel = document.getElementById('settings-panel');
+document.getElementById('settings-open').addEventListener('click',()=>{
+  settingsOverlay.classList.add('open');
+  settingsPanel.classList.add('open');
+});
+function closeSettings(){
+  settingsOverlay.classList.remove('open');
+  settingsPanel.classList.remove('open');
+}
+settingsOverlay.addEventListener('click',closeSettings);
+document.getElementById('settings-close').addEventListener('click',closeSettings);
+
+// Logout (demo only)
+document.getElementById('logout-btn').addEventListener('click',()=>{
+  document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Georgia,serif;font-size:20px;color:#6E2A2A;background:#FAF5EC;">You have been logged out. Refresh to sign back in.</div>';
+});
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script><script type="text/javascript">function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: "en",includedLanguages: "zh-CN,en",layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, "google_translate_element");}</script>
+<div id="google_translate_element"></div>
+<script>(function(){function applyTranslation(){var saved=localStorage.getItem("lang_pref");if(saved==="zh"){var sel=document.querySelector(".goog-te-combo");if(sel){sel.value="zh-CN";var e=new Event("change");sel.dispatchEvent(e);}}}function adjustForTranslateBanner(){var banner=document.querySelector(".goog-te-banner-frame");var header=document.querySelector("header");var dd=document.getElementById("google_translate_element");var bannerH=banner&&banner.offsetHeight>0?banner.offsetHeight:0;if(header){header.style.position="sticky";header.style.top=bannerH+"px";}if(dd){dd.style.top=(62+bannerH)+"px";}if(document.body){document.body.style.marginTop=bannerH+"px";}}var observer=new MutationObserver(function(){adjustForTranslateBanner();});observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class"]});window.addEventListener("resize",adjustForTranslateBanner);setTimeout(function(){adjustForTranslateBanner();applyTranslation();},500);setInterval(adjustForTranslateBanner,2000);})();</script></body>
+</html>

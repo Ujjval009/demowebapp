@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Point of Sale · Fernway Supply Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/pos.css">
+<link rel="stylesheet" href="css/customers.css">
+<link rel="stylesheet" href="css/history.css">
+<style>
+.goog-te-banner-frame{/* Google Translate banner - keep visible */}.goog-te-banner-frame.skiptranslate{display:none;}
+body{/* body style - Google Translate handles offset */}
+.goog-te-gadget-simple{display:inline-block;}
+.goog-te-menu-frame{font-family:ui-sans-serif,sans-serif!important;}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <a class="brand-mark" href="#/pos" title="Fernway Supply Co.">C</a>
+    <button class="nav-btn active" data-route="pos" title="Billing" onclick="Router.navigate('pos')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v16"/></svg>
+    </button>
+    <button class="nav-btn" data-route="customers" title="Customers" onclick="Router.navigate('customers')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6"/><path d="M16.5 4.6c1.6.5 2.7 2 2.7 3.8 0 1.8-1.1 3.3-2.7 3.8"/><path d="M19 14.3c2 .7 3.3 2.6 3.3 4.9"/></svg>
+    </button>
+    <button class="nav-btn" data-route="history" title="Sales history" onclick="Router.navigate('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>
+      <span class="icon-badge" id="historyBadge">9</span>
+    </button>
+    <div class="nav-spacer"></div>
+    <button class="nav-btn logout" title="Sign out" onclick="Router.navigate('logout')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+    </button>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+
+    <div class="main-head">
+      <div>
+        <h1 id="pageTitle">Billing</h1>
+        <div class="sub" id="pageSub">Fernway Supply Co. · Point of Sale</div>
+      </div>
+      <div class="shift-pill">
+        <div class="avatar" id="userAvatar">RM</div>
+        <div class="who">
+          <div class="name" id="userName">Riya Mehta</div>
+          <div class="role" id="userRole">Shop Cashier</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= POS VIEW ================= -->
+    <section class="pos" data-view="pos" id="view-pos">
+      <div class="browse">
+        <div class="search-row">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="searchInput" type="text" placeholder="Search by name, SKU, or barcode…">
+          </div>
+        </div>
+        <div class="chip-row" id="chipRow"></div>
+        <div class="grid" id="productGrid"></div>
+      </div>
+
+      <div class="cart-panel">
+        <div class="cart-head">
+          <div class="ct">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.5 3h2l2.6 12.4a2 2 0 0 0 2 1.6h8.3a2 2 0 0 0 2-1.6L21 8H6"/></svg>
+            Cart
+          </div>
+          <div class="cart-count" id="cartCount">0</div>
+        </div>
+
+        <div class="customer-block">
+          <label>Customer</label>
+          <div id="customerArea"></div>
+        </div>
+
+        <div class="cart-items" id="cartItems"></div>
+
+        <div class="cart-summary">
+          <div class="sum-row"><span>Subtotal</span><span id="subtotalVal">₹0</span></div>
+          <div class="sum-row"><span>Tax (5%)</span><span id="taxVal">₹0</span></div>
+          <div class="sum-row total"><span>Total</span><span class="val" id="totalVal">₹0</span></div>
+
+          <div class="pay-grid" id="payGrid"></div>
+
+          <button class="complete-btn" id="completeBtn" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+            Complete Sale
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CUSTOMERS VIEW ================= -->
+    <section class="screen" data-view="customers" id="view-customers" style="display:none">
+      <div class="toolbar">
+        <div class="search-box table">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="custSearch" type="text" placeholder="Search customers…">
+        </div>
+        <div class="spacer"></div>
+        <button class="btn primary" id="newCustBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+          New customer
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data">
+          <thead>
+            <tr><th>Name</th><th>Phone</th><th>Email</th><th>Visits</th><th>Total spent</th><th></th></tr>
+          </thead>
+          <tbody id="customerTableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Customer modal -->
+      <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+          <div class="modal-head">
+            <h3 id="custModalTitle">New Customer</h3>
+            <button class="modal-close" id="modalClose">×</button>
+          </div>
+          <div class="modal-body">
+            <div class="field">
+              <label for="fName">Full name</label>
+              <input type="text" id="fName" placeholder="e.g. Ananya Gupta">
+            </div>
+            <div class="field">
+              <label for="fPhone">Phone number</label>
+              <input type="text" id="fPhone" placeholder="e.g. 98765 43210">
+            </div>
+            <div class="field">
+              <label for="fEmail">Email address</label>
+              <input type="email" id="fEmail" placeholder="e.g. ananya@mail.com">
+            </div>
+          </div>
+          <div class="modal-foot">
+            <button class="btn" id="modalCancel">Cancel</button>
+            <button class="btn primary" id="modalSave">Save customer</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HISTORY VIEW ================= -->
+    <section class="screen" data-view="history" id="view-history" style="display:none">
+      <div class="summary-strip">
+        <div class="sum-card">
+          <div class="label">Total revenue</div>
+          <div class="value" id="statRevenue">₹0</div>
+          <div class="sub">All time</div>
+        </div>
+        <div class="sum-card">
+          <div class="label">Orders</div>
+          <div class="value" id="statOrders">0</div>
+          <div class="sub">Completed sales</div>
+        </div>
+        <div class="sum-card">
+          <div class="label">Avg. order</div>
+          <div class="value" id="statAvg">₹0</div>
+          <div class="sub">Per transaction</div>
+        </div>
+      </div>
+
+      <div class="chart-strip">
+        <div class="chart-panel">
+          <div class="chart-title">Revenue · last 7 days</div>
+          <div class="barchart" id="weeklyChart"></div>
+        </div>
+        <div class="chart-panel">
+          <div class="chart-title">Transaction log</div>
+          <div class="table-wrap" style="border:none;border-radius:8px;">
+            <table class="data">
+              <thead><tr><th>Receipt</th><th>Date</th><th>Customer</th><th>Items</th><th>Method</th><th>Total</th></tr></thead>
+              <tbody id="salesMiniBody" style="display:none"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-panel" style="margin-bottom:20px;">
+        <div class="chart-title">All transactions</div>
+        <div class="table-wrap" style="border:none;border-radius:8px;">
+          <table class="data">
+            <thead><tr><th>Receipt</th><th>Date</th><th>Customer</th><th>Items</th><th>Method</th><th>Total</th><th></th></tr></thead>
+            <tbody id="salesTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Receipt modal -->
+      <div class="modal-overlay receipt-modal" id="receiptModal">
+        <div class="modal">
+          <div class="modal-head">
+            <h3>Receipt <span style="color:var(--muted);font-weight:500;" id="rId"></span></h3>
+            <button class="modal-close" id="receiptClose">×</button>
+          </div>
+          <div class="receipt-body">
+            <div style="text-align:center;font-family:var(--font-num);font-weight:700;font-size:15px;">Fernway Supply Co.</div>
+            <div class="receipt-meta">
+              <span>Date: <strong id="rDate"></strong></span>
+              <span>Customer: <strong id="rCustomer"></strong></span>
+              <span>Payment: <strong id="rMethod"></strong></span>
+            </div>
+            <div class="receipt-lines" id="receiptLines"></div>
+            <div class="receipt-meta" style="margin:8px 0;">
+              <div class="receipt-line"><span>Subtotal</span><span id="rSubtotal"></span></div>
+              <div class="receipt-line"><span>Tax (5%)</span><span id="rTax"></span></div>
+            </div>
+            <div class="receipt-total"><span>Total</span><span id="rTotal"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast">
+  <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div>
+  <div>
+    <div class="tt-title" id="toastTitle">Sale complete</div>
+    <div class="tt-sub" id="toastSub">Receipt #1042 · ₹0</div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/router.js"></script>
+<script src="js/pos.js"></script>
+<script src="js/customers.js"></script>
+<script src="js/history.js"></script>
+<script>
+  (function(){
+    if (!Auth.isAuthenticated()){ window.location.replace("index.html"); return; }
+
+    const p = Auth.profile();
+    if (p){
+      if (document.getElementById("userName")) document.getElementById("userName").textContent = p.name;
+      if (document.getElementById("userRole")) document.getElementById("userRole").textContent = p.role;
+      if (document.getElementById("userAvatar")) document.getElementById("userAvatar").textContent = p.avatar;
+    }
+
+    // History badge = number of sales
+    const badge = document.getElementById("historyBadge");
+    if (badge) badge.textContent = AppData.sales.length > 9 ? "9+" : AppData.sales.length;
+
+    const titles = {
+      pos:["Billing","Fernway Supply Co. · Point of Sale"],
+      customers:["Customers","Manage your customer directory"],
+      history:["Sales history","Transactions, receipts and reports"],
+    };
+    document.addEventListener("view:pos", ()=>{ const t=titles.pos; document.getElementById("pageTitle").textContent=t[0]; document.getElementById("pageSub").textContent=t[1]; });
+    document.addEventListener("view:customers", ()=>{ const t=titles.customers; document.getElementById("pageTitle").textContent=t[0]; document.getElementById("pageSub").textContent=t[1]; });
+    document.addEventListener("view:history", ()=>{ const t=titles.history; document.getElementById("pageTitle").textContent=t[0]; document.getElementById("pageSub").textContent=t[1]; });
+
+    Router.init();
+  })();
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script><script type="text/javascript">function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: "en",includedLanguages: "zh-CN,en",layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, "google_translate_element");}</script>
+<div id="google_translate_element"></div>
+<script>(function(){function applyTranslation(){var saved=localStorage.getItem("lang_pref");if(saved==="zh"){var sel=document.querySelector(".goog-te-combo");if(sel){sel.value="zh-CN";var e=new Event("change");sel.dispatchEvent(e);}}}function adjustForTranslateBanner(){var banner=document.querySelector(".goog-te-banner-frame");var header=document.querySelector("header");var dd=document.getElementById("google_translate_element");var bannerH=banner&&banner.offsetHeight>0?banner.offsetHeight:0;if(header){header.style.position="sticky";header.style.top=bannerH+"px";}if(dd){dd.style.top=(62+bannerH)+"px";}if(document.body){document.body.style.marginTop=bannerH+"px";}}var observer=new MutationObserver(function(){adjustForTranslateBanner();});observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class"]});window.addEventListener("resize",adjustForTranslateBanner);setTimeout(function(){adjustForTranslateBanner();applyTranslation();},500);setInterval(adjustForTranslateBanner,2000);})();</script></body>
+</html>

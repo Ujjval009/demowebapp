@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>demo web application — Software, built and shown</title>
+<style>
+  :root{
+    --ink:#16233D;
+    --ink-soft:#47536B;
+    --paper:#EDEFF2;
+    --paper-raised:#FFFFFF;
+    --line:#D5DAE2;
+    --teal:#2F7A6D;
+    --blue:#3E63DD;
+    --violet:#6C5CE7;
+    --amber:#DD9A2B;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 12% -10%, rgba(47,122,109,.10), transparent 60%),
+      radial-gradient(1000px 500px at 92% 0%, rgba(108,92,231,.09), transparent 55%),
+      var(--paper);
+    color:var(--ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    font-weight:700;letter-spacing:-0.015em;margin:0;
+  }
+  a{color:inherit;}
+  ::selection{background:rgba(63,130,237,.25);}
+  body.no-scroll{overflow:hidden;}
+
+  /* ---- Header ---- */
+  header{
+    position:sticky;top:0;z-index:10;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 44px;
+    border-bottom:1px solid rgba(213,218,226,.8);
+    background:rgba(255,255,255,.72);
+    backdrop-filter:blur(14px) saturate(1.2);
+    -webkit-backdrop-filter:blur(14px) saturate(1.2);
+  }
+  .logo{display:flex;align-items:center;gap:11px;text-decoration:none;}
+    .logo-name{font-family:Georgia,serif;font-weight:700;font-size:18px;}
+  nav{display:flex;align-items:center;gap:30px;font-size:14.5px;}
+  nav a{text-decoration:none;color:var(--ink-soft);position:relative;padding:4px 0;}
+  nav a::after{
+    content:'';position:absolute;left:0;bottom:-2px;height:2px;width:0;
+    background:linear-gradient(90deg,var(--teal),var(--blue));
+    transition:width .25s ease;border-radius:2px;
+  }
+  nav a:hover{color:var(--ink);}
+  nav a:hover::after{width:100%;}
+  .book-demo{
+    background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;
+    text-decoration:none;font-size:13.5px;margin-left:6px;
+    box-shadow:0 6px 16px -8px rgba(22,35,61,.5);transition:.2s ease;
+  }
+  .book-demo:hover{transform:translateY(-1px);box-shadow:0 10px 22px -8px rgba(22,35,61,.55);}
+
+  /* ---- Hero ---- */
+  .hero{
+    position:relative;overflow:hidden;
+    padding:96px 48px 64px;max-width:980px;
+  }
+  .hero-bg{position:absolute;inset:0;pointer-events:none;}
+  .hero-bg::before,.hero-bg::after,.hero-bg i{
+    content:'';position:absolute;border-radius:50%;filter:blur(34px);will-change:transform;
+  }
+  .hero-bg::before{
+    width:520px;height:520px;top:-180px;left:6%;
+    background:radial-gradient(circle at 30% 30%,rgba(108,92,231,.30),transparent 70%);
+    animation:drift 18s ease-in-out infinite alternate;
+  }
+  .hero-bg::after{
+    width:460px;height:460px;bottom:-220px;right:2%;
+    background:radial-gradient(circle at 40% 40%,rgba(47,122,109,.28),transparent 70%);
+    animation:drift2 22s ease-in-out infinite alternate;
+  }
+  .hero-bg i{
+    width:300px;height:300px;top:12%;left:56%;
+    background:radial-gradient(circle at 50% 50%,rgba(221,154,43,.22),transparent 70%);
+    animation:drift3 26s ease-in-out infinite alternate;
+  }
+  @keyframes drift{to{transform:translate(60px,40px) scale(1.15);}}
+  @keyframes drift2{to{transform:translate(-70px,-30px) scale(1.1);}}
+  @keyframes drift3{to{transform:translate(-40px,60px) scale(1.2);}}
+
+  .hero>*{position:relative;}
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12.5px;color:var(--teal);font-weight:600;letter-spacing:.04em;
+    border:1px solid rgba(47,122,109,.3);background:rgba(47,122,109,.07);
+    padding:6px 14px;border-radius:999px;margin-bottom:22px;
+  }
+  .hero h1{font-size:56px;line-height:1.08;max-width:760px;}
+  .hero h1 .grad{
+    background:linear-gradient(100deg,var(--teal) 0%,var(--blue) 45%,var(--violet) 90%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero-sub{margin-top:20px;max-width:56ch;color:var(--ink-soft);font-size:17px;}
+  .hero-cta{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;}
+  .btn-hero{
+    background:var(--ink);color:#fff;text-decoration:none;
+    padding:13px 24px;border-radius:999px;font-size:14.5px;
+    box-shadow:0 10px 24px -10px rgba(22,35,61,.5);transition:.2s ease;
+  }
+  .btn-hero:hover{transform:translateY(-2px);box-shadow:0 16px 30px -12px rgba(22,35,61,.6);}
+  .btn-ghost-hero{
+    border:1px solid var(--line);background:rgba(255,255,255,.6);
+    color:var(--ink);text-decoration:none;padding:13px 24px;border-radius:999px;
+    font-size:14.5px;transition:.2s ease;
+  }
+  .btn-ghost-hero:hover{border-color:var(--ink);}
+  .hero-stats{
+    display:flex;gap:16px;margin-top:48px;padding-top:26px;
+    border-top:1px solid var(--line);flex-wrap:wrap;
+  }
+  .stat{
+    flex:1;min-width:168px;
+    background:linear-gradient(180deg,rgba(255,255,255,.85),rgba(247,248,250,.85));
+    border:1px solid var(--line);border-radius:16px;
+    padding:18px 20px;display:flex;flex-direction:column;gap:10px;
+    box-shadow:0 10px 22px -14px rgba(22,35,61,.2);
+  }
+  .stat-ico{
+    width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:16px;background:#fff;border:1px solid var(--line);
+    box-shadow:0 2px 6px -2px rgba(22,35,61,.12);
+  }
+  .stat b{
+    font-family:Georgia,serif;font-size:32px;line-height:1;display:flex;align-items:baseline;gap:4px;
+    background:linear-gradient(100deg,var(--teal),var(--blue));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .stat b i{font-style:normal;font-size:16px;letter-spacing:.04em;}
+  .stat-label{font-size:12px;color:var(--ink-soft);letter-spacing:.02em;text-transform:uppercase;font-weight:600;}
+
+  /* ---- Catalog ---- */
+  .catalog{padding:0 48px 96px;}
+  .catalog-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    border-bottom:1px solid var(--line);
+    padding-bottom:16px;margin-bottom:30px;
+  }
+  .catalog-head h2{font-size:26px;}
+  .catalog-head span{font-size:13.5px;color:var(--ink-soft);}
+  .grid{
+    display:grid;grid-template-columns:repeat(5,1fr);
+    gap:16px;
+  }
+  .tone-retail{--tone:#2F7A6D;--tone-soft:#E3F0EC;}
+  .tone-sales{--tone:#3E63DD;--tone-soft:#E6ECFB;}
+  .tone-ops{--tone:#6C5CE7;--tone-soft:#ECEAFB;}
+  .tone-auto{--tone:#DD9A2B;--tone-soft:#F8EEDC;}
+  .tone-ai{--tone:#2E7D5B;--tone-soft:#E2F0EA;}
+  .tone-billing{--tone:#C2552C;--tone-soft:#F8EAE0;}
+  .tone-erp{--tone:#405B73;--tone-soft:#E4EAF0;}
+  .tone-crumb{--tone:#7A4A26;--tone-soft:#F0E4D6;}
+  .tone-fieldline{--tone:#B45309;--tone-soft:#FBE9D8;}
+  .tone-hms{--tone:#0E7490;--tone-soft:#E0F2F7;}
+  .tone-port{--tone:#1D4E89;--tone-soft:#E2EBF5;}
+  .tone-inv{--tone:#4F46E5;--tone-soft:#E6E4FB;}
+  .tone-pos{--tone:#F59E0B;--tone-soft:#FDF0DC;}
+  .card{
+    --tone:#16233D;--tone-soft:#EDEFF2;
+    position:relative;
+    background:var(--paper-raised);
+    border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 24px;cursor:pointer;
+    opacity:0;transform:translateY(20px);
+    transition:opacity .55s ease,transform .35s ease,box-shadow .35s ease,border-color .35s ease;
+    transform-style:preserve-3d;will-change:transform;
+    display:flex;flex-direction:column;justify-content:space-between;min-height:220px;
+    overflow:hidden;
+  }
+  .card::before{
+    content:'';position:absolute;inset:0 0 auto 0;height:3px;
+    background:linear-gradient(90deg,var(--tone),transparent);
+    opacity:0;transition:opacity .3s ease;
+  }
+  .card.in{opacity:1;transform:translateY(0);}
+  .card:hover{
+    transform:translateY(-5px);
+    border-color:var(--tone);
+    box-shadow:0 22px 44px -24px rgba(22,35,61,.3);
+  }
+  .card:hover::before{opacity:1;}
+  .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .card .icon{
+    width:40px;height:40px;border-radius:12px;background:var(--tone-soft);
+    color:var(--tone);display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+  }
+  .live-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:10.5px;font-weight:600;letter-spacing:.09em;color:var(--tone);
+    border:1px solid var(--tone);border-radius:999px;padding:3px 9px;
+  }
+  .live-pill i{width:7px;height:7px;border-radius:50%;background:var(--tone);animation:blink 1.6s ease infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .card .tab{font-size:11.5px;letter-spacing:.03em;color:var(--tone);font-weight:600;margin-bottom:12px;}
+  .card h3{font-size:20px;margin-bottom:8px;}
+  .card p{font-size:14px;color:var(--ink-soft);margin:0;}
+  .card .tags{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap;}
+  .card .tags span{
+    font-size:11.5px;border:1px solid var(--line);background:#FBFBFC;
+    padding:3px 10px;border-radius:999px;color:var(--ink-soft);
+  }
+  .card-cta{
+    margin-top:20px;font-size:13px;font-weight:600;color:var(--tone);
+    opacity:0;transform:translateX(-4px);transition:.25s ease;
+  }
+  .card:hover .card-cta{opacity:1;transform:none;}
+
+  /* ---- Footer ---- */
+  footer{
+    border-top:1px solid var(--line);
+    padding:28px 48px;color:var(--ink-soft);font-size:13px;
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    background:rgba(255,255,255,.5);
+  }
+
+  /* ---- Drawer ---- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(16,26,47,.42);
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:20;
+  }
+  .overlay.open{opacity:1;pointer-events:auto;}
+  .drawer{
+    position:fixed;top:0;right:0;bottom:0;
+    width:min(80vw,1500px);
+    background:var(--paper-raised);
+    transform:translateX(102%);
+    transition:transform .38s cubic-bezier(.32,.72,0,1);
+    z-index:21;display:flex;flex-direction:column;
+    border-left:1px solid var(--line);
+    box-shadow:-30px 0 60px -40px rgba(22,35,61,.4);
+  }
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{
+    padding:24px 28px;border-bottom:1px solid var(--line);
+    background:#FBFBFC;
+    display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  }
+  .drawer-kicker{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+  .p-tab{
+    font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--teal);
+    border:1px solid var(--teal);border-radius:999px;padding:2px 10px;
+  }
+  .p-live{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#2F8F54;font-weight:600;}
+  .p-live i{width:8px;height:8px;border-radius:50%;background:#34C26A;animation:blink 1.6s ease infinite;}
+  .drawer-head h3{font-size:24px;margin-bottom:6px;}
+  .drawer-head p{font-size:13.5px;color:var(--ink-soft);margin:0;max-width:560px;}
+  .drawer-close{
+    background:none;border:1px solid var(--line);width:36px;height:36px;
+    border-radius:50%;cursor:pointer;font-size:16px;color:var(--ink-soft);
+    flex-shrink:0;transition:.2s ease;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px -4px rgba(22,35,61,.18);
+  }
+  .drawer-close:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .drawer-back{
+    display:inline-flex;align-items:center;gap:6px;
+    background:none;border:1px solid var(--line);border-radius:999px;
+    padding:7px 14px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ink);
+    flex-shrink:0;transition:.2s ease;font-family:inherit;text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .drawer-back:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .drawer-body{padding:0;overflow-y:auto;flex:1;scrollbar-width:thin;scrollbar-color:var(--line) transparent;}
+  .drawer-body::-webkit-scrollbar{width:10px;}
+  .drawer-body::-webkit-scrollbar-thumb{background:var(--line);border-radius:20px;border:3px solid #fff;}
+  .pane{padding:24px 28px 32px;}
+
+  /* Mock browser frame */
+  .mbrowser{
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;
+    box-shadow:0 24px 60px -30px rgba(22,35,61,.4);
+  }
+  .mb-bar{
+    display:flex;align-items:center;gap:14px;
+    background:#F0F1F4;border-bottom:1px solid var(--line);
+    padding:10px 14px;
+  }
+  .mb-dots{display:flex;gap:6px;}
+  .mb-dots i{width:11px;height:11px;border-radius:50%;}
+  .mb-dots i:nth-child(1){background:#E56B5C;}
+  .mb-dots i:nth-child(2){background:#E8B64B;}
+  .mb-dots i:nth-child(3){background:#59B875;}
+  .mb-url{
+    flex:1;text-align:center;
+    background:#fff;border:1px solid var(--line);border-radius:7px;
+    padding:5px 12px;margin:0 8px;
+    font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11.5px;color:var(--ink-soft);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .mb-live{
+    font-size:10px;letter-spacing:.08em;font-weight:700;color:#2F8F54;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .mb-live::before{content:'';width:7px;height:7px;border-radius:50%;background:#34C26A;animation:blink 1.6s ease infinite;}
+  .mb-body [id$="-demo"]{border:none;border-radius:0;}
+  .mb-body{border-top:none;}
+  .mb-body [id$="-demo"] iframe,
+  .mb-body > div > iframe{display:block;width:100%;border:none;background:#F5F1E6;}
+  #ext-demo iframe{height:calc(100vh - 215px);min-height:460px;}
+  #ext-note{
+    display:none;margin-bottom:14px;padding:14px 16px;border-radius:10px;
+    background:#FFF7E6;border:1px solid #E8D18F;color:#7A5A12;font-size:13px;
+  }
+  #ext-note b{font-weight:600;}
+  #ext-note code{background:#F3E9CF;border-radius:4px;padding:1px 6px;font-size:12px;}
+
+  .drawer-foot{
+    padding:18px 28px;border-top:1px solid var(--line);
+    display:flex;gap:12px;
+  }
+  .btn{
+    flex:1;padding:12px 16px;border-radius:999px;
+    text-align:center;text-decoration:none;font-size:14.5px;cursor:pointer;transition:.2s ease;
+  }
+  .btn-primary{background:var(--ink);color:#fff;border:1px solid var(--ink);}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 20px -10px rgba(22,35,61,.5);}
+  .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--ink);}
+  #preview-remote{display:none;}
+
+  /* ================= Moon Cakes ================= */
+  #mooncake-demo{
+    --mc-maroon:#6E2A2A;
+    --mc-maroon-deep:#4E1D1D;
+    --mc-gold:#C79A3D;
+    --mc-cream:#FAF5EC;
+    --mc-card:#FFFFFF;
+    --mc-ink:#2B211C;
+    --mc-ink-soft:#6B5D52;
+    --mc-line:#E7DCC8;
+    background:var(--mc-cream);
+    color:var(--mc-ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+  }
+  #mooncake-demo h1,#mooncake-demo h2,#mooncake-demo h3{
+    font-family: Georgia, "Iowan Old Style", serif;
+    margin:0;font-weight:700;
+  }
+  #mooncake-demo .app{display:flex;min-height:0;}
+  #mooncake-demo .sidebar{
+    width:210px;background:var(--mc-maroon-deep);color:#F4E9D8;
+    padding:22px 18px;flex-shrink:0;
+  }
+  #mooncake-demo .brand{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+  #mooncake-demo .brand-mark{
+    width:32px;height:32px;border-radius:50%;
+    background:var(--mc-gold);color:var(--mc-maroon-deep);
+    display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,serif;font-weight:700;
+  }
+  #mooncake-demo .brand-name{font-family:Georgia,serif;font-size:17px;}
+  #mooncake-demo .side-label{
+    font-size:11.5px;color:#D8B98A;margin:20px 0 10px;
+  }
+  #mooncake-demo .store-item{
+    padding:10px 12px;border-radius:6px;margin-bottom:6px;
+    cursor:pointer;font-size:14px;display:flex;justify-content:space-between;
+    color:#EFE1CC;
+  }
+  #mooncake-demo .store-item:hover{background:rgba(255,255,255,0.06);}
+  #mooncake-demo .store-item.active{background:var(--mc-gold);color:var(--mc-maroon-deep);font-weight:600;}
+  #mooncake-demo .signed-in{
+    margin-top:36px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.15);
+    font-size:13px;color:#D8B98A;
+  }
+  #mooncake-demo .signed-in b{display:block;color:#F4E9D8;font-size:14px;margin-top:2px;}
+  #mooncake-demo .logout{
+    margin-top:12px;width:100%;padding:9px;border-radius:6px;
+    background:transparent;border:1px solid rgba(255,255,255,0.25);
+    color:#F4E9D8;cursor:pointer;font-size:13px;
+  }
+  #mooncake-demo .logout:hover{background:rgba(255,255,255,0.08);}
+  #mooncake-demo .main{flex:1;padding:22px 24px;}
+  #mooncake-demo .topline{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;}
+  #mooncake-demo .topline h1{font-size:24px;}
+  #mooncake-demo .topline p{color:var(--mc-ink-soft);margin-top:6px;font-size:13.5px;}
+  #mooncake-demo .settings-btn{
+    border:1px solid var(--mc-line);background:var(--mc-card);
+    padding:8px 14px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--mc-ink);
+  }
+  #mooncake-demo .settings-btn:hover{background:#FBF0DE;}
+  #mooncake-demo .stat-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px;
+  }
+  #mooncake-demo .stat-card{
+    background:var(--mc-card);border:1px solid var(--mc-line);border-radius:8px;
+    padding:16px;
+  }
+  #mooncake-demo .stat-card .label{font-size:12px;color:var(--mc-ink-soft);}
+  #mooncake-demo .stat-card .value{font-family:Georgia,serif;font-size:24px;margin-top:6px;}
+  #mooncake-demo .stat-card .delta{font-size:12px;margin-top:6px;}
+  #mooncake-demo .delta.up{color:#3D7A4C;}
+  #mooncake-demo .delta.down{color:#A6402E;}
+  #mooncake-demo .panels{display:grid;grid-template-columns:1fr;gap:18px;}
+  #mooncake-demo .panel{
+    background:var(--mc-card);border:1px solid var(--mc-line);border-radius:8px;padding:20px;
+  }
+  #mooncake-demo .panel h2{font-size:15px;margin-bottom:14px;}
+  #mooncake-demo .bars{display:flex;align-items:flex-end;gap:10px;height:130px;}
+  #mooncake-demo .bar{
+    flex:1;background:linear-gradient(180deg,var(--mc-gold),var(--mc-maroon));
+    border-radius:4px 4px 0 0;position:relative;
+    transition:filter .15s ease;
+  }
+  #mooncake-demo .bar:hover{filter:brightness(1.08);}
+  #mooncake-demo .bar span{
+    position:absolute;bottom:-20px;left:0;right:0;text-align:center;
+    font-size:11px;color:var(--mc-ink-soft);
+  }
+  #mooncake-demo .bars{padding-bottom:24px;}
+  #mooncake-demo table{width:100%;border-collapse:collapse;font-size:13px;}
+  #mooncake-demo th{
+    text-align:left;color:var(--mc-ink-soft);font-weight:600;font-size:12px;
+    padding-bottom:10px;border-bottom:1px solid var(--mc-line);
+  }
+  #mooncake-demo td{padding:9px 0;border-bottom:1px solid var(--mc-line);}
+  #mooncake-demo .tag{
+    font-size:11px;padding:2px 8px;border-radius:10px;
+    background:#F3E7CE;color:#8A6A2A;
+  }
+  #mooncake-demo .settings-overlay{
+    position:fixed;inset:0;background:rgba(43,33,28,.35);opacity:0;pointer-events:none;
+    transition:opacity .2s;z-index:9;
+  }
+  #mooncake-demo .settings-overlay.open{opacity:1;pointer-events:auto;}
+  #mooncake-demo .settings-panel{
+    position:fixed;top:0;right:0;bottom:0;width:300px;background:var(--mc-card);
+    transform:translateX(100%);transition:transform .25s ease;z-index:10;
+    padding:24px;border-left:1px solid var(--mc-line);
+  }
+  #mooncake-demo .settings-panel.open{transform:translateX(0);}
+  #mooncake-demo .settings-panel h3{font-size:17px;margin-bottom:16px;}
+  #mooncake-demo .settings-row{
+    display:flex;justify-content:space-between;padding:10px 0;
+    border-bottom:1px solid var(--mc-line);font-size:13px;
+  }
+  #mooncake-demo .close-x{
+    float:right;border:none;background:none;font-size:16px;cursor:pointer;color:var(--mc-ink-soft);
+  }
+
+  /* ================= DealTrack ================= */
+  #zcrm-demo{
+    --z-ink:#23272E; --z-soft:#626C79; --z-paper:#F6F7F9; --z-card:#FFFFFF; --z-line:#E2E5E9;
+    --z-blue:#3E63DD; --z-green:#2F9E63;
+    background:var(--z-paper); color:var(--z-ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+    padding:20px;
+  }
+  #zcrm-demo h1,#zcrm-demo h2,#zcrm-demo h3{font-family:Georgia,serif;margin:0;font-weight:700;}
+  #zcrm-demo input,#zcrm-demo select{font-family:inherit;}
+  .z-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .z-head h1{font-size:22px;}
+  .z-live{font-size:11px;color:var(--z-blue);border:1px solid var(--z-blue);padding:2px 10px;border-radius:20px;letter-spacing:.03em;}
+  .z-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px;}
+  .z-stat{background:var(--z-card);border:1px solid var(--z-line);border-radius:10px;padding:14px;transition:.2s ease;}
+  .z-stat:hover{box-shadow:0 10px 20px -14px rgba(35,39,46,.4);}
+  .z-stat .label{font-size:11.5px;color:var(--z-soft);}
+  .z-stat .value{font-family:Georgia,serif;font-size:22px;margin-top:4px;}
+  .z-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .z-chip{font-size:12px;border:1px solid var(--z-line);background:var(--z-card);padding:5px 12px;border-radius:20px;cursor:pointer;color:var(--z-soft);transition:.15s ease;}
+  .z-chip:hover{border-color:var(--z-blue);color:var(--z-blue);}
+  .z-chip.active{background:var(--z-blue);border-color:var(--z-blue);color:#fff;}
+  .z-addform{display:flex;gap:8px;margin-bottom:14px;}
+  .z-addform input{flex:1 1 120px;padding:8px 10px;border:1px solid var(--z-line);border-radius:8px;font-size:13px;background:#fff;}
+  .z-addform input:focus{outline:none;border-color:var(--z-blue);box-shadow:0 0 0 3px rgba(62,99,221,.15);}
+  .z-addform button{background:var(--z-blue);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;transition:.15s ease;}
+  .z-addform button:hover{filter:brightness(1.08);}
+  .z-table{width:100%;border-collapse:collapse;background:var(--z-card);border:1px solid var(--z-line);border-radius:10px;font-size:13px;overflow:hidden;}
+  .z-table th{text-align:left;color:var(--z-soft);font-size:11.5px;padding:10px 12px;border-bottom:1px solid var(--z-line);}
+  .z-table td{padding:10px 12px;border-bottom:1px solid var(--z-line);}
+  .z-table tr:last-child td{border-bottom:none;}
+  .z-table tbody tr{transition:background .12s ease;}
+  .z-table tbody tr:hover{background:#FAFBFF;}
+  .z-stage-sel{border:1px solid var(--z-line);border-radius:6px;padding:5px 8px;font-size:12px;background:#fff;color:var(--z-ink);cursor:pointer;}
+  .z-val{font-variant-numeric:tabular-nums;}
+  .z-empty{text-align:center;color:var(--z-soft);padding:26px;font-size:13px;}
+
+  /* ================= Friday ================= */
+  #friday-demo{
+    --f-ink:#1F2430; --f-soft:#56626F; --f-paper:#F5F4FB; --f-card:#FFF; --f-line:#E2E1EE;
+    --f-violet:#6C5CE7; --f-gold:#D9A441;
+    background:var(--f-paper); color:var(--f-ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+    padding:20px;
+  }
+  #friday-demo h1,#friday-demo h2,#friday-demo h3{font-family:Georgia,serif;margin:0;font-weight:700;}
+  #friday-demo input{font-family:inherit;}
+  .f-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .f-head h1{font-size:22px;}
+  .f-sub{font-size:12.5px;color:var(--f-soft);margin-bottom:16px;}
+  .f-roster{background:var(--f-card);border:1px solid var(--f-line);border-radius:10px;overflow:hidden;font-size:12px;margin-bottom:14px;}
+  .f-roster table{width:100%;border-collapse:collapse;}
+  .f-roster th{padding:9px 6px;color:var(--f-soft);font-weight:600;font-size:11px;border-bottom:1px solid var(--f-line);text-align:center;}
+  .f-roster td{padding:8px 6px;border-bottom:1px solid var(--f-line);text-align:center;}
+  .f-roster td.f-name{text-align:left;font-weight:600;white-space:nowrap;padding-left:12px;}
+  .f-roster tr:last-child td{border-bottom:none;}
+  .f-shift{border-radius:6px;padding:4px 8px;display:inline-block;min-width:38px;font-size:11.5px;cursor:pointer;user-select:none;transition:transform .12s ease;}
+  .f-shift.AM{background:#F6E7BF;color:#8A6210;}
+  .f-shift.PM{background:#E4E0FB;color:#5A4BC4;}
+  .f-shift.Off{background:#EEF0F3;color:#8A919B;}
+  .f-shift:hover{outline:2px solid var(--f-violet);transform:scale(1.05);}
+  .f-legend{display:flex;gap:16px;font-size:11.5px;color:var(--f-soft);margin-bottom:18px;}
+  .f-legend span{display:flex;align-items:center;gap:6px;}
+  .f-dot{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .f-msg-head{font-weight:600;font-size:14px;margin-bottom:4px;}
+  .f-note{font-size:11.5px;color:var(--f-soft);margin-bottom:10px;}
+  .f-msg{border:1px solid var(--f-line);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--f-soft);margin-bottom:8px;background:var(--f-card);}
+  .f-msg b{color:var(--f-ink);}
+  .f-chat{display:flex;gap:8px;margin-top:12px;}
+  .f-chat input{flex:1;padding:9px 12px;border:1px solid var(--f-line);border-radius:10px;font-size:13px;background:#fff;}
+  .f-chat input:focus{outline:none;border-color:var(--f-violet);box-shadow:0 0 0 3px rgba(108,92,231,.15);}
+  .f-chat button{background:var(--f-violet);color:#fff;border:none;border-radius:10px;padding:9px 16px;cursor:pointer;font-size:13px;transition:.15s ease;}
+  .f-chat button:hover{filter:brightness(1.08);}
+
+  /* ================= ZAuto ================= */
+  #zauto-demo{
+    --a-ink:#21262B; --a-soft:#5E6A74; --a-paper:#F5F6F7; --a-card:#FFF; --a-line:#DFE3E6;
+    --a-steel:#4A5561; --a-green:#2F9E63; --a-red:#D64545;
+    background:var(--a-paper); color:var(--a-ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+    padding:20px;
+  }
+  #zauto-demo h1,#zauto-demo h2,#zauto-demo h3{font-family:Georgia,serif;margin:0;font-weight:700;}
+  #zauto-demo input,#zauto-demo select{font-family:inherit;}
+  .a-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+  .a-head h1{font-size:22px;}
+  .a-sub{font-size:12.5px;color:var(--a-soft);margin-bottom:16px;}
+  .a-bays{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px;}
+  .a-bay{background:var(--a-card);border:1px solid var(--a-line);border-radius:10px;padding:14px;transition:.2s ease;}
+  .a-bay:hover{transform:translateY(-2px);box-shadow:0 10px 20px -14px rgba(33,38,43,.4);}
+  .a-bay .num{font-weight:700;font-size:15px;display:flex;justify-content:space-between;align-items:center;}
+  .a-status{font-size:11px;padding:2px 8px;border-radius:20px;}
+  .a-status.free{background:#E4F4EA;color:#1F7A4D;}
+  .a-status.busy{background:#FBE7E7;color:#B23A3A;}
+  .a-bay .meta{font-size:12px;color:var(--a-soft);margin-top:6px;}
+  .a-add{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .a-add input{flex:1 1 140px;padding:8px 10px;border:1px solid var(--a-line);border-radius:8px;font-size:13px;background:#fff;}
+  .a-add input:focus{outline:none;border-color:var(--a-steel);box-shadow:0 0 0 3px rgba(74,85,97,.15);}
+  .a-add select{padding:8px 10px;border:1px solid var(--a-line);border-radius:8px;font-size:13px;background:#fff;color:var(--a-ink);}
+  .a-add button{background:var(--a-steel);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;transition:.15s ease;}
+  .a-add button:hover{filter:brightness(1.12);}
+  .a-tb{width:100%;border-collapse:collapse;background:var(--a-card);border:1px solid var(--a-line);border-radius:10px;font-size:13px;overflow:hidden;}
+  .a-tb th{text-align:left;color:var(--a-soft);font-size:11.5px;padding:10px 12px;border-bottom:1px solid var(--a-line);}
+  .a-tb td{padding:10px 12px;border-bottom:1px solid var(--a-line);}
+  .a-tb tr:last-child td{border-bottom:none;}
+  .a-tb tbody tr{transition:background .12s ease;}
+  .a-tb tbody tr:hover{background:#FAFBFC;}
+  .a-status-sel{border:1px solid var(--a-line);border-radius:6px;padding:5px 8px;font-size:12px;background:#fff;color:var(--a-ink);cursor:pointer;}
+  .a-empty{text-align:center;color:var(--a-soft);padding:24px;font-size:13px;}
+
+  /* ---- Responsive ---- */
+  @media (max-width:1199px){
+    .grid{grid-template-columns:repeat(3,1fr);}
+  }
+  @media (max-width:760px){
+    header{padding:14px 18px;}
+    nav{display:none;}
+    .hero{padding:64px 20px 44px;}
+    .hero h1{font-size:38px;}
+    .catalog{padding:0 20px 64px;}
+    .grid{grid-template-columns:1fr;}
+    .pane{padding:16px;}
+    .drawer{width:100vw;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
+    html{scroll-behavior:auto;}
+  }
+<style>.goog-te-banner-frame{position:fixed!important;top:0!important;left:0!important;width:100%!important;z-index:2147483647!important;}.goog-te-banner-frame.skiptranslate{display:none!important;}.goog-te-menu-frame{font-family:ui-sans-serif,sans-serif!important;}body{transition:margin-top .3s ease;}#google_translate_element{position:fixed;top:14px;right:14px;z-index:99999;}#google_translate_element .goog-te-combo{padding:8px 16px;border-radius:999px;border:2px solid rgba(255,255,255,.6);background:rgba(30,40,60,.85);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:ui-sans-serif,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.3);backdrop-filter:blur(10px);appearance:none;-webkit-appearance:none;}#google_translate_element .goog-te-combo:hover{background:rgba(30,40,60,.95);transform:scale(1.05);}#google_translate_element .goog-te-combo:focus{outline:2px solid var(--teal, #2F7A6D);outline-offset:2px;}</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="#top">
+    <div class="logo-name">demo web application</div>
+  </a>
+  <nav>
+    <a href="#demos">Portfolio</a>
+    <a href="#demos">Products</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+    <a href="#demos" class="book-demo">Book Demo</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-bg"><i></i></div>
+    <span class="hero-badge">✦ demo web application presents&nbsp;·&nbsp;13 working builds</span>
+    <h1 class="display">Software, <span class="grad">built and shown.</span></h1>
+    <p class="hero-sub">We design and ship working products for retail, logistics, and service businesses — then let you try them before you commit. Every item below is a live build, not a mockup.</p>
+    <div class="hero-cta">
+      <a class="btn-hero" href="#demos">Browse the demos</a>
+      <a class="btn-ghost-hero" href="#">Book a demo →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-ico">🧩</span><b><span class="num" data-count="13">0</span></b><span class="stat-label">live demos</span></div>
+      <div class="stat"><span class="stat-ico">🏷️</span><b><span class="num" data-count="13">0</span></b><span class="stat-label">industries covered</span></div>
+      <div class="stat"><span class="stat-ico">🛠️</span><b><span class="num" data-count="3">0</span><i> yrs</i></b><span class="stat-label">building in production</span></div>
+    </div>
+  </section>
+
+  <section class="catalog" id="demos">
+    <div class="catalog-head">
+      <h2>Web Apps</h2>
+      <span>Click any item to open the live demo</span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2026 demo web application — demo builds for retail, sales, hospitality &amp; automotive.</span>
+  <span>All demos run entirely in your browser.</span>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Project preview">
+  <div class="drawer-head">
+    <div style="flex:1;">
+      <div class="drawer-kicker">
+        <span class="p-tab" id="d-tab"></span>
+        <span class="p-live"><i></i> Live demo</span>
+      </div>
+      <h3 id="d-title"></h3>
+      <p id="d-sub"></p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="drawer-back" id="d-back" aria-label="Back to portfolio">← Back</button>
+      <button class="drawer-close" id="d-close" aria-label="Close preview">✕</button>
+    </div>
+  </div>
+  <div class="drawer-body">
+    <div class="pane">
+      <div class="mbrowser">
+        <div class="mb-bar">
+          <div class="mb-dots"><i></i><i></i><i></i></div>
+          <div class="mb-url">🔒 <span id="mb-url"></span></div>
+          <div class="mb-live">LIVE</div>
+        </div>
+        <div class="mb-body">
+          <div id="preview-remote">
+            <div class="url-bar" style="padding:16px;font-size:12px;color:var(--ink-soft);">Live URL</div>
+            <div class="url-value" id="d-url" style="padding:16px;"></div>
+            <iframe class="preview-frame" id="d-frame" style="width:100%;height:480px;border:none;"></iframe>
+          </div>
+
+          <!-- ============ Moon Cakes ============ -->
+          <div id="mooncake-demo" style="display:none">
+            <div class="app" id="mc-root">
+              <div class="sidebar">
+                <div class="brand">
+                  <div class="brand-mark">🥮</div>
+                  <div class="brand-name">Moon Cakes</div>
+                </div>
+                <div class="side-label">SELECT A STORE TO MANAGE</div>
+                <div id="store-list"></div>
+                <div class="signed-in">Signed in as <b>Wei Lin</b></div>
+                <button class="logout" id="logout-btn">↩ Logout</button>
+              </div>
+              <div class="main">
+                <div class="topline">
+                  <div>
+                    <h1 id="store-heading">Business Overview</h1>
+                    <p id="store-sub">Mid-Autumn season performance across all branches</p>
+                  </div>
+                  <button class="settings-btn" id="settings-open">⚙ Account &amp; System Settings</button>
+                </div>
+                <div class="stat-grid" id="stat-grid"></div>
+                <div class="panels">
+                  <div class="panel">
+                    <h2>Sales, last 7 days</h2>
+                    <div class="bars" id="bars"></div>
+                  </div>
+                  <div class="panel">
+                    <h2>Available Shops</h2>
+                    <table>
+                      <thead><tr><th>Store</th><th>Today</th><th>Status</th></tr></thead>
+                      <tbody id="shops-table"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="settings-overlay" id="settings-overlay"></div>
+            <div class="settings-panel" id="settings-panel">
+              <button class="close-x" id="settings-close">✕</button>
+              <h3>Account &amp; System Settings</h3>
+              <div class="settings-row"><span>Business name</span><span>Moon Cakes Co.</span></div>
+              <div class="settings-row"><span>Currency</span><span>USD</span></div>
+              <div class="settings-row"><span>Tax rate</span><span>7%</span></div>
+              <div class="settings-row"><span>Receipt footer</span><span>Enabled</span></div>
+              <div class="settings-row"><span>Low-stock alerts</span><span>Enabled</span></div>
+            </div>
+          </div>
+
+          <!-- ============ DealTrack ============ -->
+          <div id="zcrm-demo" style="display:none">
+            <div class="z-head">
+              <h1>DealTrack — Pipeline</h1>
+              <span class="z-live">LIVE DEMO</span>
+            </div>
+            <div class="z-stats" id="z-stats"></div>
+            <div class="z-filters" id="z-filters"></div>
+            <div class="z-addform">
+              <input id="z-co" placeholder="Company name">
+              <input id="z-contact" placeholder="Contact">
+              <input id="z-val" type="number" value="0" placeholder="Value $">
+              <button id="z-add">Add Lead</button>
+            </div>
+            <table class="z-table">
+              <thead><tr><th>Company</th><th>Contact</th><th>Stage</th><th>Value</th></tr></thead>
+              <tbody id="z-rows"></tbody>
+            </table>
+            <p class="z-empty" id="z-empty" style="display:none">No leads match this filter.</p>
+          </div>
+
+          <!-- ============ Friday ============ -->
+          <div id="friday-demo" style="display:none">
+            <div class="f-head">
+              <h1>Friday — Roster</h1>
+              <span class="z-live">LIVE DEMO</span>
+            </div>
+            <div class="f-sub">Weekly shift schedule at Harbor Tavern. Click a shift to rotate Off → AM → PM.</div>
+            <div class="f-roster" id="f-roster"></div>
+            <div class="f-legend">
+              <span><span class="f-dot" style="background:#F6E7BF"></span> Morning</span>
+              <span><span class="f-dot" style="background:#E4E0FB"></span> Evening</span>
+              <span><span class="f-dot" style="background:#EEF0F3"></span> Off</span>
+            </div>
+            <div class="f-msg-head">Team Notes</div>
+            <div class="f-note">Quick messages to the front-of-house channel.</div>
+            <div id="f-thread"></div>
+            <div class="f-chat">
+              <input id="f-msg-input" placeholder="Message the team…">
+              <button id="f-send">Send</button>
+            </div>
+          </div>
+
+          <!-- ============ ZAuto ============ -->
+          <div id="zauto-demo" style="display:none">
+            <div class="a-head">
+              <h1>ZAuto — Workshop</h1>
+              <span class="z-live">LIVE DEMO</span>
+            </div>
+            <div class="a-sub">Service-bay booking and repair tracking for Keystone Auto Works.</div>
+            <div class="a-bays" id="a-bays"></div>
+            <div class="a-add">
+              <input id="a-cust" placeholder="Customer">
+              <input id="a-veh" placeholder="Vehicle">
+              <input id="a-svc" placeholder="Service">
+              <button id="a-add">Book Job</button>
+            </div>
+            <table class="a-tb">
+              <thead><tr><th>Bay</th><th>Customer</th><th>Vehicle</th><th>Service</th><th>Status</th></tr></thead>
+              <tbody id="a-rows"></tbody>
+            </table>
+            <p class="a-empty" id="a-empty" style="display:none">No bookings yet today — use “Book Job” above.</p>
+          </div>
+
+          <!-- ============ External demos (StudyDesk, Fernway, BuildERP, Crumb) ============ -->
+          <div id="ext-demo" style="display:none">
+            <div id="ext-note">
+              <b>Heads up:</b> this page was opened straight from disk (file://), so some live demos won't boot.
+              Use the local server instead —
+              <code>cd /home/arise/projects/MoonCakeMultiStore && python3 -m http.server 8080</code>
+              then open <code>http://localhost:8080</code>.
+            </div>
+            <iframe id="ext-frame" title="External demo preview" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="drawer-foot" id="drawer-foot" style="display:none">
+    <a class="btn btn-primary" id="d-open" target="_blank">Open in New Tab ↗</a>
+    <a class="btn btn-ghost" href="#">Get Similar</a>
+  </div>
+</div>
+
+<script>
+const projects = [
+  { id:"mooncake", title:"Moon Cake Multi Store", tab:"RETAIL", tone:"tone-retail", icon:"🥮", slug:"moon-cakes",
+    desc:"Multi-branch retail management for a seasonal mooncake business — store switching, live sales, and stock in one place.",
+    tags:["Retail","Multi-store"] },
+  { id:"zcrm", title:"DealTrack", tab:"SALES", tone:"tone-sales", icon:"🗂", slug:"zcrm",
+    desc:"A lightweight CRM for small sales teams tracking leads, follow-ups, and deal stages.",
+    tags:["CRM","Sales"] },
+  { id:"friday", title:"Friday", tab:"OPERATIONS", tone:"tone-ops", icon:"📅", slug:"friday",
+    desc:"Shift scheduling and staff messaging for restaurants with rotating weekly rosters.",
+    tags:["Scheduling","Hospitality"] },
+  { id:"zauto", title:"ZAuto", tab:"AUTOMOTIVE", tone:"tone-auto", icon:"🔧", slug:"zauto",
+    desc:"Service-bay booking and repair tracking for independent auto workshops.",
+    tags:["Bookings","Service"] },
+  { id:"ai-study", title:"StudyDesk", tab:"AI · EDTECH", tone:"tone-ai", icon:"📖", slug:"ai-study-assistant",
+    desc:"An AI study assistant that turns any PDF into a focused study session — flashcards, summaries, and progress tracking.",
+    tags:["AI","EdTech"] },
+  { id:"fernway", title:"Fernway POS", tab:"BILLING", tone:"tone-billing", icon:"🛒", slug:"fernway-pos",
+    desc:"An all-in-one point of sale for any shop — lightning-fast checkout, inventory, customer profiles, and sales reports.",
+    tags:["POS","Retail","Inventory"] },
+  { id:"builder", title:"BuildERP", tab:"CONSTRUCTION", tone:"tone-erp", icon:"🏗️", slug:"builder-erp",
+    desc:"A construction management ERP — projects, budgets, and resources for contractors and builders.",
+    tags:["ERP","Construction"] },
+  { id:"crumb", title:"Crumb & Co.", tab:"FOOD & BEV", tone:"tone-crumb", icon:"🥐", slug:"crumb-and-co",
+    desc:"A bakery franchise dashboard — store performance, recipes, and inventory across locations.",
+    tags:["Franchise","Food & Bev"] },
+  { id:"fieldline", title:"Fieldline", tab:"SERVICE · SAAS", tone:"tone-fieldline", icon:"⚡", slug:"fieldline",
+    desc:"A SaaS landing experience for field-service teams — scheduling, invoicing, crew messaging, and job costing from one screen.",
+    tags:["SaaS","Scheduling"] },
+  { id:"hms", title:"Wardline", tab:"HEALTHCARE", tone:"tone-hms", icon:"🏥", slug:"hms-wardline",
+    desc:"A hospital management system — admissions, wards, patients, and reports for clinical staff.",
+    tags:["HMS","Healthcare"] },
+  { id:"portside", title:"Portside Wholesale", tab:"WHOLESALE", tone:"tone-port", icon:"⚓", slug:"portside-wholesale",
+    desc:"Wholesale distribution management — orders, inventory across warehouses, and supplier tracking.",
+    tags:["Wholesale","Distribution"] },
+  { id:"smartinv", title:"Smart Inventory", tab:"INVENTORY", tone:"tone-inv", icon:"📦", slug:"smart-inventory",
+    desc:"A smart inventory dashboard for a retail electronics store — stock health, reorder planning, and category sales.",
+    tags:["Inventory","Retail"] },
+  { id:"storepos", title:"ToyStore POS", tab:"POS", tone:"tone-pos", icon:"🧸", slug:"toystore-pos",
+    desc:"A point-of-sale system for a toy store — product catalog, cart, checkout, and receipts in one flow.",
+    tags:["POS","Retail"] },
+  { id:"meridian", title:"Meridian Clinic", tab:"HEALTHCARE", tone:"tone-hms", icon:"🩺", slug:"meridian-clinic",
+    desc:"Operations dashboard for a medical clinic — appointments, patient flow, and staff schedules day to day.",
+    tags:["Healthcare","Clinic"] },
+  { id:"rag", title:"RAGAI", tab:"AI · ML", tone:"tone-ai", icon:"🤖", slug:"rag-ai",
+    desc:"A company knowledge AI pipeline — search, retrieve, and generate answers from your documents.",
+    tags:["AI","RAG","ML"] }
+];
+
+const grid = document.getElementById('grid');
+
+projects.forEach((p,i)=>{
+  const card = document.createElement('article');
+  card.className = 'card ' + p.tone;
+  card.setAttribute('role','button');
+  card.setAttribute('tabindex','0');
+  card.setAttribute('aria-label','Open demo: ' + p.title);
+  card.innerHTML = `
+    <div>
+      <div class="card-top">
+        <span class="icon">${p.icon}</span>
+        <span class="live-pill"><i></i>LIVE</span>
+      </div>
+      <div class="tab">${p.tab}</div>
+      <h3>${p.title}</h3>
+      <p>${p.desc}</p>
+    </div>
+    <div>
+      <div class="tags">${p.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+      <div class="card-cta">Open preview →</div>
+    </div>
+  `;
+  const open = ()=>openDrawer(p);
+  card.addEventListener('click',open);
+  card.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();open();} });
+  card.style.transitionDelay = (i*70)+'ms';
+  grid.appendChild(card);
+  setTimeout(()=>card.classList.add('in'), 80 + i*70);
+});
+
+/* ---- Card tilt ---- */
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+document.querySelectorAll('.card').forEach(c=>{
+  if(reduced||matchMedia('(pointer:coarse)').matches) return;
+  c.addEventListener('pointermove',e=>{
+    const r=c.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-0.5;
+    const y=(e.clientY-r.top)/r.height-0.5;
+    c.style.setProperty('--rx',(-y*5)+'deg');
+    c.style.setProperty('--ry',(x*7)+'deg');
+  });
+  c.addEventListener('pointerleave',()=>{
+    c.style.setProperty('--rx','0deg');
+    c.style.setProperty('--ry','0deg');
+  });
+});
+const tiltCSS = document.createElement('style');
+tiltCSS.textContent = `.card.in:hover{transform:translateY(-5px) perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));}`;
+document.head.appendChild(tiltCSS);
+
+/* ---- Count-up stats ---- */
+function countUp(el){
+  const target=+el.dataset.count;
+  const dur=1100;
+  const start=performance.now();
+  function tick(now){
+    const p=Math.min((now-start)/dur,1);
+    const eased=1-Math.pow(1-p,3);
+    el.textContent=Math.round(target*eased);
+    if(p<1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+if(!reduced) document.querySelectorAll('.num[data-count]').forEach(countUp);
+else document.querySelectorAll('.num[data-count]').forEach(el=>el.textContent=el.dataset.count);
+
+/* ---- Drawer ---- */
+const overlay=document.getElementById('overlay');
+const drawer=document.getElementById('drawer');
+const paneMap = { mooncake:'mooncake-demo', zcrm:'zcrm-demo', friday:'friday-demo', zauto:'zauto-demo' };
+const extSrc = { 'ai-study':'AIStudyAssistant/study-desk.html', fernway:'BillingFernway/index.html', builder:'BUILDER.ERP/dist/index.html', crumb:'CrumbCo/bakery-dashboard-demo.html', fieldline:'Fieldline/index.html', hms:'HMS/wardline/dist/index.html', portside:'PortsideWholesale/dist/index.html', smartinv:'Smartinventorydashboard/index.html', storepos:'toystorePOS/toystore-billing/dist/index.html', meridian:'MeridianClinic/meridian-clinic.html', rag:'RAGSYSTEM/dist/index.html' };
+
+function openDrawer(p){
+  const paneId = paneMap[p.id];
+  const ext = extSrc[p.id];
+  document.getElementById('d-title').textContent=p.title;
+  document.getElementById('d-sub').textContent=p.desc;
+  document.getElementById('d-tab').textContent=p.tab;
+  document.getElementById('mb-url').textContent='studio.stackline.app/'+p.slug;
+  Object.values(paneMap).forEach(id=>{
+    document.getElementById(id).style.display = (id===paneId)?'block':'none';
+  });
+  if(paneId || ext){
+    const extDemo = document.getElementById('ext-demo');
+    extDemo.style.display = ext?'block':'none';
+    if(ext){
+      document.getElementById('ext-note').style.display =
+        location.protocol==='file:' ? 'block' : 'none';
+      const f = document.getElementById('ext-frame');
+      f.src = ext;
+    }
+    document.getElementById('preview-remote').style.display='none';
+    document.getElementById('drawer-foot').style.display='none';
+  }else{
+    document.getElementById('preview-remote').style.display='block';
+    document.getElementById('drawer-foot').style.display='flex';
+    document.getElementById('d-url').textContent='/'+p.url;
+    document.getElementById('d-frame').src=p.url;
+    document.getElementById('d-open').href=p.url;
+  }
+  overlay.classList.add('open');
+  drawer.classList.add('open');
+  document.body.classList.add('no-scroll');
+}
+function closeDrawer(){
+  overlay.classList.remove('open');
+  drawer.classList.remove('open');
+  document.body.classList.remove('no-scroll');
+}
+overlay.addEventListener('click',closeDrawer);
+document.getElementById('d-close').addEventListener('click',closeDrawer);
+document.getElementById('d-back').addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); });
+
+/* ================= Moon Cakes ================= */
+const stores = [
+  { id:'all',  name:'All Stores',      today:2840, month:58120, customers:412, products:36 },
+  { id:'downtown', name:'Downtown',    today:1120, month:23940, customers:168, products:22 },
+  { id:'harbor',   name:'Harbor Mall', today:940,  month:19310, customers:141, products:19 },
+  { id:'east',     name:'East Plaza',  today:780,  month:14870, customers:103, products:17 },
+];
+const weekly = {
+  all:      [820,940,1010,880,1240,1610,2840],
+  downtown: [310,360,400,340,480,610,1120],
+  harbor:   [260,300,330,290,410,520,940],
+  east:     [250,280,280,250,350,480,780],
+};
+let current = 'all';
+
+function renderStoreList(){
+  const storeList = document.getElementById('store-list');
+  storeList.innerHTML='';
+  stores.forEach(s=>{
+    const el = document.createElement('div');
+    el.className = 'store-item' + (s.id===current?' active':'');
+    el.innerHTML = `<span>${s.name}</span>`;
+    el.addEventListener('click',()=>{ current=s.id; renderAll(); });
+    storeList.appendChild(el);
+  });
+}
+function renderStats(){
+  const s = stores.find(x=>x.id===current);
+  const fmt = n => '$'+n.toLocaleString();
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-card"><div class="label">Today</div><div class="value">${fmt(s.today)}</div><div class="delta up">▲ 8.2% vs yesterday</div></div>
+    <div class="stat-card"><div class="label">This Month</div><div class="value">${fmt(s.month)}</div><div class="delta up">▲ 14.6% vs last month</div></div>
+    <div class="stat-card"><div class="label">Customers</div><div class="value">${s.customers}</div><div class="delta up">▲ 22 new this week</div></div>
+    <div class="stat-card"><div class="label">Products</div><div class="value">${s.products}</div><div class="delta down">▼ 2 low stock</div></div>
+  `;
+}
+function renderBars(){
+  const data = weekly[current];
+  const max = Math.max(...data);
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  document.getElementById('bars').innerHTML = data.map((v,i)=>`
+    <div class="bar" style="height:${(v/max*100)}%"><span>${days[i]}</span></div>
+  `).join('');
+}
+function renderShops(){
+  document.getElementById('shops-table').innerHTML = stores.filter(s=>s.id!=='all').map(s=>`
+    <tr><td>${s.name}</td><td>$${s.today.toLocaleString()}</td><td><span class="tag">Open</span></td></tr>
+  `).join('');
+}
+function renderHeading(){
+  const s = stores.find(x=>x.id===current);
+  document.getElementById('store-heading').textContent =
+    current==='all' ? 'Business Overview' : s.name + ' — Overview';
+}
+function renderAll(){
+  renderStoreList(); renderStats(); renderBars(); renderShops(); renderHeading();
+}
+renderAll();
+
+const settingsOverlay = document.getElementById('settings-overlay');
+const settingsPanel = document.getElementById('settings-panel');
+document.getElementById('settings-open').addEventListener('click',()=>{
+  settingsOverlay.classList.add('open'); settingsPanel.classList.add('open');
+});
+function closeSettings(){
+  settingsOverlay.classList.remove('open'); settingsPanel.classList.remove('open');
+}
+settingsOverlay.addEventListener('click',closeSettings);
+document.getElementById('settings-close').addEventListener('click',closeSettings);
+document.getElementById('logout-btn').addEventListener('click',()=>{
+  document.getElementById('mc-root').innerHTML =
+    '<div style="display:flex;align-items:center;justify-content:center;min-height:60vh;font-family:Georgia,serif;font-size:20px;color:#6E2A2A;text-align:center;padding:40px;">You have been logged out. Close the panel and reopen to sign back in.</div>';
+});
+
+/* ================= DealTrack ================= */
+const zStages = ['New','Contacted','Qualified','Won','Lost'];
+let zSeq = 5;
+let zLeads = [
+  { id:1, co:'Harbor Foods',   contact:'M. Chan', stage:'New',       val:1250 },
+  { id:2, co:'Jade Palace',    contact:'L. Wong', stage:'Contacted', val:1900 },
+  { id:3, co:'Lotus Trading',  contact:'A. Chen', stage:'Qualified', val:3400 },
+  { id:4, co:'Golden Gate Bistro', contact:'R. Lin', stage:'Won',    val:5200 },
+  { id:5, co:'Pearl Bay Imports',  contact:'S. Tan', stage:'Lost',   val:2100 }
+];
+let zFilter = 'All';
+
+function zStats(){
+  const open = zLeads.filter(l=>~zStages.indexOf(l.stage) && l.stage!=='Won' && l.stage!=='Lost');
+  const pipe = open.reduce((a,l)=>a+l.val,0);
+  const tot  = zLeads.reduce((a,l)=>a+l.val,0);
+  const won  = zLeads.filter(l=>l.stage==='Won').length;
+  document.getElementById('z-stats').innerHTML = `
+    <div class="z-stat"><div class="label">Open deals</div><div class="value">${open.length}</div></div>
+    <div class="z-stat"><div class="label">Pipeline value</div><div class="value">$${pipe.toLocaleString()}</div></div>
+    <div class="z-stat"><div class="label">Won</div><div class="value">${won}</div></div>
+    <div class="z-stat"><div class="label">Total value</div><div class="value">$${tot.toLocaleString()}</div></div>
+  `;
+}
+function zFilters(){
+  const all = ['All',...zStages];
+  document.getElementById('z-filters').innerHTML = all.map(stage=>`
+    <span class="z-chip${stage===zFilter?' active':''}" onclick="zSetFilter('${stage}')">${stage}</span>
+  `).join('');
+}
+function zSetFilter(stage){ zFilter=stage; zRenderRows(); zFilters(); }
+function zSetStage(id,val){
+  const l = zLeads.find(x=>x.id===id); if(!l) return;
+  l.stage = val; zStats(); zRenderRows(); zFilters();
+}
+function zRenderRows(){
+  const rows = zFilter==='All' ? zLeads : zLeads.filter(l=>l.stage===zFilter);
+  document.getElementById('z-empty').style.display = rows.length?'none':'block';
+  document.getElementById('z-rows').innerHTML = rows.map(l=>`
+    <tr>
+      <td><b>${l.co}</b></td>
+      <td>${l.contact}</td>
+      <td><select class="z-stage-sel" onchange="zSetStage(${l.id},this.value)">
+        ${zStages.map(s=>`<option ${s===l.stage?'selected':''}>${s}</option>`).join('')}
+      </select></td>
+      <td class="z-val">$${l.val.toLocaleString()}</td>
+    </tr>
+  `).join('');
+}
+function zRenderAll(){ zStats(); zFilters(); zRenderRows(); }
+zRenderAll();
+document.getElementById('z-add').addEventListener('click',()=>{
+  const co=document.getElementById('z-co').value.trim();
+  const ct=document.getElementById('z-contact').value.trim();
+  const val=parseInt(document.getElementById('z-val').value)||0;
+  if(!co) return;
+  zLeads.unshift({ id:++zSeq, co, contact:ct||'—', stage:'New', val });
+  document.getElementById('z-co').value='';
+  document.getElementById('z-contact').value='';
+  document.getElementById('z-val').value='0';
+  zFilter='All'; zRenderAll();
+});
+
+/* ================= Friday ================= */
+const fDays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let fStaff = [
+  { name:'Nadia', shifts:['AM','Off','AM','PM','Off','AM','AM'] },
+  { name:'Rocky', shifts:['PM','AM','Off','AM','AM','PM','Off'] },
+  { name:'Elena', shifts:['Off','PM','PM','Off','PM','Off','PM'] },
+  { name:'Dev',   shifts:['AM','AM','PM','AM','Off','AM','AM'] },
+  { name:'Mia',   shifts:['Off','Off','AM','PM','AM','PM','Off'] }
+];
+const fCycle = ['Off','AM','PM'];
+const fMsgs = [
+  { who:'Manager', text:'Roster locked for next week — confirm your shifts by Friday noon.', time:'9:40 AM' },
+  { who:'Dev',  text:'Saturday dinner rush: can we get a second on station three?', time:'11:02 AM' }
+];
+function fCycleShift(si,di){
+  fStaff[si].shifts[di] = fCycle[(fCycle.indexOf(fStaff[si].shifts[di])+1)%3];
+  fRenderRoster();
+}
+function fRenderRoster(){
+  document.getElementById('f-roster').innerHTML = `
+    <table>
+      <thead><tr><th>Staff</th>${fDays.map(d=>`<th>${d}</th>`).join('')}</tr></thead>
+      <tbody>
+        ${fStaff.map((st,i)=>`
+          <tr>
+            <td class="f-name">${st.name}</td>
+            ${st.shifts.map((sh,d)=>`
+              <td><span class="f-shift ${sh}" onclick="fCycleShift(${i},${d})">${sh}</span></td>
+            `).join('')}
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+function fRenderThread(){
+  document.getElementById('f-thread').innerHTML = fMsgs.map(m=>`
+    <div class="f-msg"><b>${m.who}</b> <span style="opacity:.7">· ${m.time}</span><br>${m.text}</div>
+  `).join('');
+}
+fRenderRoster(); fRenderThread();
+document.getElementById('f-send').addEventListener('click',()=>{
+  const input=document.getElementById('f-msg-input');
+  const text=input.value.trim(); if(!text) return;
+  const now=new Date();
+  fMsgs.push({ who:'You', text, time: now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) });
+  input.value=''; fRenderThread();
+});
+document.getElementById('f-msg-input').addEventListener('keydown',e=>{
+  if(e.key==='Enter') document.getElementById('f-send').click();
+});
+
+/* ================= ZAuto ================= */
+const aBays = [
+  { id:1, name:'Bay 1', mechanic:'Tomas' },
+  { id:2, name:'Bay 2', mechanic:'Rae' },
+  { id:3, name:'Bay 3', mechanic:'Idris' },
+  { id:4, name:'Bay 4', mechanic:'June' }
+];
+let aSeq = 3;
+let aJobs = [
+  { id:1, bay:1, cust:'Milex Cargo', veh:'Volvo FH12',      svc:'Brake overhaul',  status:'In Service' },
+  { id:2, bay:2, cust:'City Cab Co.',veh:'Toyota Prius',    svc:'Oil & filter',    status:'Ready' },
+  { id:3, bay:3, cust:'Priya S.',    veh:'Honda Civic',     svc:'Diagnostic',      status:'Booked' }
+];
+const aStatuses = ['Booked','In Service','Ready','Done'];
+
+function aRenderBays(){
+  document.getElementById('a-bays').innerHTML = aBays.map(b=>{
+    const jobs = aJobs.filter(j=>j.bay===b.id && j.status!=='Done');
+    const busy = jobs.some(j=>j.status==='In Service' || j.status==='Booked');
+    return `
+      <div class="a-bay">
+        <div class="num">${b.name}
+          <span class="a-status ${busy?'busy':'free'}">${busy?'Occupied':'Free'}</span>
+        </div>
+        <div class="meta">${b.mechanic}<br>${jobs.length} active job${jobs.length===1?'':'s'}</div>
+      </div>
+    `;
+  }).join('');
+}
+function aSetStatus(id,val){
+  const j=aJobs.find(x=>x.id===id); if(!j) return;
+  j.status=val; aRenderBays(); aRenderJobs();
+}
+function aRenderJobs(){
+  document.getElementById('a-empty').style.display = aJobs.length?'none':'block';
+  document.getElementById('a-rows').innerHTML = aJobs.map(j=>`
+    <tr>
+      <td><b>Bay ${j.bay}</b></td>
+      <td>${j.cust}</td>
+      <td>${j.veh}</td>
+      <td>${j.svc}</td>
+      <td><select class="a-status-sel" onchange="aSetStatus(${j.id},this.value)">
+        ${aStatuses.map(s=>`<option ${s===j.status?'selected':''}>${s}</option>`).join('')}
+      </select></td>
+    </tr>
+  `).join('');
+}
+function aRenderAll(){ aRenderBays(); aRenderJobs(); }
+aRenderAll();
+document.getElementById('a-add').addEventListener('click',()=>{
+  const cust=document.getElementById('a-cust').value.trim();
+  const veh=document.getElementById('a-veh').value.trim();
+  const svc=document.getElementById('a-svc').value.trim();
+  if(!cust||!svc) return;
+  aJobs.unshift({ id:++aSeq, bay:1, cust, veh:veh||'—', svc, status:'Booked' });
+  document.getElementById('a-cust').value='';
+  document.getElementById('a-veh').value='';
+  document.getElementById('a-svc').value='';
+  aRenderAll();
+});
+</script>
+
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script><script type="text/javascript">function googleTranslateElementInit() {new google.translate.TranslateElement({pageLanguage: "en",includedLanguages: "zh-CN,en",layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, "google_translate_element");}</script>
+<div id="google_translate_element"></div>
+<script>(function(){function applyTranslation(){var saved=localStorage.getItem("lang_pref");if(saved==="zh"){var sel=document.querySelector(".goog-te-combo");if(sel){sel.value="zh-CN";var e=new Event("change");sel.dispatchEvent(e);}}}function adjustForTranslateBanner(){var banner=document.querySelector(".goog-te-banner-frame");var header=document.querySelector("header");var dd=document.getElementById("google_translate_element");var bannerH=banner&&banner.offsetHeight>0?banner.offsetHeight:0;if(header){header.style.position="sticky";header.style.top=bannerH+"px";}if(dd){dd.style.top=(62+bannerH)+"px";}if(document.body){document.body.style.marginTop=bannerH+"px";}}var observer=new MutationObserver(function(){adjustForTranslateBanner();});observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style","class"]});window.addEventListener("resize",adjustForTranslateBanner);setTimeout(function(){adjustForTranslateBanner();applyTranslation();},500);setInterval(adjustForTranslateBanner,2000);})();</script></body>
+</html>
