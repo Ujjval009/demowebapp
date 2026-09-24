@@ -1,1 +1,1 @@
-{"name":"mooncake-multistore","version":"1.0.0","private":true,"scripts":{"vercel-build":"echo 'no build needed'"},"type":"module"}
+{"name":"mooncake-multistore","version":"1.0.0","private":true,"scripts":{"vercel-build":"echo 'ok'"},"type":"module"}
