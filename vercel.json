@@ -1,1 +1,1 @@
-{"framework":"plain","builds":[],"routes":[{"src":"/(.*)","dest":"$1"},{"src":"/","dest":"/index.html"}],"cleanUrls":true}
+{"framework":"plain","builds":[],"outputDirectory":".","routes":[{"src":"/(.*)","dest":"$1"}],"cleanUrls":true}
