@@ -26,7 +26,7 @@
     },
     {
       "source": "/CrumbCo/(.*)",
-      "destination": "/CrumbCo/$1"
+      "destination": "/CrumbCo/crumb-demo/dist/$1"
     },
     {
       "source": "/Fieldline/(.*)",

@@ -814,9 +814,6 @@ const projects = [
   { id:"fernway", title:"Fernway POS", tab:"BILLING", tone:"tone-billing", icon:"🛒", slug:"fernway-pos",
     desc:"An all-in-one point of sale for any shop — lightning-fast checkout, inventory, customer profiles, and sales reports.",
     tags:["POS","Retail","Inventory"] },
-  { id:"builder", title:"BuildERP", tab:"CONSTRUCTION", tone:"tone-erp", icon:"🏗️", slug:"builder-erp",
-    desc:"A construction management ERP — projects, budgets, and resources for contractors and builders.",
-    tags:["ERP","Construction"] },
   { id:"crumb", title:"Crumb & Co.", tab:"FOOD & BEV", tone:"tone-crumb", icon:"🥐", slug:"crumb-and-co",
     desc:"A bakery franchise dashboard — store performance, recipes, and inventory across locations.",
     tags:["Franchise","Food & Bev"] },
@@ -914,7 +911,7 @@ else document.querySelectorAll('.num[data-count]').forEach(el=>el.textContent=el
 const overlay=document.getElementById('overlay');
 const drawer=document.getElementById('drawer');
 const paneMap = { mooncake:'mooncake-demo', zcrm:'zcrm-demo', friday:'friday-demo', zauto:'zauto-demo' };
-const extSrc = { 'ai-study':'AIStudyAssistant/study-desk.html', fernway:'BillingFernway/index.html', builder:'BUILDER.ERP/dist/index.html', crumb:'CrumbCo/bakery-dashboard-demo.html', fieldline:'Fieldline/index.html', hms:'HMS/wardline/dist/index.html', portside:'PortsideWholesale/dist/index.html', smartinv:'Smartinventorydashboard/index.html', storepos:'toystorePOS/toystore-billing/dist/index.html', meridian:'MeridianClinic/meridian-clinic.html', rag:'RAGSYSTEM/dist/index.html' };
+const extSrc = { 'ai-study':'AIStudyAssistant/study-desk.html', fernway:'BillingFernway/index.html', crumb:'CrumbCo/crumb-demo/dist/index.html', fieldline:'Fieldline/index.html', hms:'HMS/wardline/dist/index.html', portside:'PortsideWholesale/dist/index.html', smartinv:'Smartinventorydashboard/index.html', storepos:'toystorePOS/toystore-billing/dist/index.html', meridian:'MeridianClinic/meridian-clinic.html', rag:'RAGSYSTEM/dist/index.html' };
 
 function openDrawer(p){
   const paneId = paneMap[p.id];
