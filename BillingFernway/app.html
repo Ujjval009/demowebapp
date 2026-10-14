@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Point of Sale · Fernway Supply Co.</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/variables.css">
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/layout.css">
-<link rel="stylesheet" href="css/pos.css">
-<link rel="stylesheet" href="css/customers.css">
-<link rel="stylesheet" href="css/history.css">
-<style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Point of Sale · Fernway Supply Co.</title>
+  <base href="/BillingFernway/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/pos.css">
+  <link rel="stylesheet" href="css/customers.css">
+  <link rel="stylesheet" href="css/history.css">
+  <!-- Razorpay SDK - loaded dynamically by pos.js, but preload for performance -->
+  <link rel="preload" href="https://checkout.razorpay.com/v1/checkout.js" as="script" crossorigin="anonymous">
+  <style>
 .goog-te-banner-frame{/* Google Translate banner - keep visible */}.goog-te-banner-frame.skiptranslate{display:none;}
 body{/* body style - Google Translate handles offset */}
 .goog-te-gadget-simple{display:inline-block;}
@@ -236,6 +239,11 @@ body{/* body style - Google Translate handles offset */}
     <div class="tt-title" id="toastTitle">Sale complete</div>
     <div class="tt-sub" id="toastSub">Receipt #1042 · ₹0</div>
   </div>
+</div>
+
+<div class="toast error" id="posError">
+  <div class="cross"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></div>
+  <div class="tt-sub" id="posErrorMsg"></div>
 </div>
 
 <script src="js/data.js"></script>

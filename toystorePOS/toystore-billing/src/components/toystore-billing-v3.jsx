@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plus, Minus, Trash2, Search, Blocks, Gamepad2, PawPrint, Puzzle, Bike, ShoppingCart, CreditCard, Banknote, CheckCircle2 } from "lucide-react";
 
 const CATEGORY_STYLE = {
@@ -47,6 +47,17 @@ export default function ToyStoreBilling() {
   const [stage, setStage] = useState("sell");
   const [order, setOrder] = useState(null);
   const [orderCounter, setOrderCounter] = useState(1042);
+  const [paymentMethod, setPaymentMethod] = useState("card");
+
+  useEffect(() => {
+    const existingScript = document.querySelector("script[src='https://checkout.razorpay.com/v1/checkout.js']");
+    if (existingScript) return;
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   const visibleProducts = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -74,16 +85,67 @@ export default function ToyStoreBilling() {
   const itemCount = cart.reduce((n, l) => n + l.qty, 0);
 
   const startCheckout = () => cart.length && setStage("pay");
+
   const completeSale = (method) => {
     const num = orderCounter;
     setOrder({ number: num, lines: cart, subtotal, tax, total, method, time: new Date() });
     setOrderCounter((n) => n + 1);
     setStage("receipt");
   };
+
+  const handleRazorpayPayment = () => {
+    if (!window.Razorpay) {
+      alert("Razorpay SDK is still loading. Please try again in a moment.");
+      return;
+    }
+
+    const amountInPaise = Math.round(total * 100);
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: amountInPaise,
+      currency: "INR",
+      name: "ToyStore Billing",
+      description: "Toy purchase payment",
+      handler: function (response) {
+        const paymentId = response?.razorpay_payment_id || "Razorpay";
+        setPaymentMethod("razorpay");
+        completeSale(`Razorpay (${paymentId.slice(-6)})`);
+      },
+      prefill: {
+        name: "Guest Customer",
+        email: "customer@example.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#1B2430",
+      },
+      modal: {
+        ondismiss: function () {
+          setPaymentMethod("card");
+        },
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
+
+  const processPayment = (method) => {
+    setPaymentMethod(method);
+
+    if (method === "razorpay") {
+      handleRazorpayPayment();
+      return;
+    }
+
+    completeSale(method);
+  };
+
   const newSale = () => {
     setCart([]);
     setOrder(null);
     setStage("sell");
+    setPaymentMethod("card");
   };
 
   return (
@@ -242,18 +304,38 @@ export default function ToyStoreBilling() {
                 <p className="text-[32px] mb-8" style={{ fontWeight: 700 }}>{currency(total)}</p>
                 <div className="flex flex-col gap-2.5">
                   <button
-                    onClick={() => completeSale("Card")}
-                    className="flex items-center justify-center gap-2 py-3 rounded-md border border-[#D8DCE3] text-[13px]"
+                    onClick={() => processPayment("card")}
+                    className={
+                      "flex items-center justify-center gap-2 py-3 rounded-md border text-[13px] " +
+                      (paymentMethod === "card" ? "border-[#1B2430] bg-[#F5F6F8]" : "border-[#D8DCE3]")
+                    }
                     style={{ fontWeight: 600 }}
                   >
                     <CreditCard size={15} /> Pay with Card
                   </button>
                   <button
-                    onClick={() => completeSale("Cash")}
-                    className="flex items-center justify-center gap-2 py-3 rounded-md text-[13px]"
-                    style={{ background: "#1B2430", color: "#FFFFFF", fontWeight: 600 }}
+                    onClick={() => processPayment("cash")}
+                    className={
+                      "flex items-center justify-center gap-2 py-3 rounded-md text-[13px] " +
+                      (paymentMethod === "cash" ? "bg-[#1B2430] text-white" : "bg-[#F5F6F8] text-[#1B2430]")
+                    }
+                    style={{ fontWeight: 600 }}
                   >
                     <Banknote size={15} /> Pay with Cash
+                  </button>
+                  <button
+                    onClick={() => processPayment("razorpay")}
+                    className={
+                      "flex items-center justify-center gap-2 py-3 rounded-md border text-[13px] " +
+                      (paymentMethod === "razorpay" ? "border-[#F59E0B] bg-[#FFF7ED] text-[#B45309]" : "border-[#D8DCE3] bg-white text-[#1B2430]")
+                    }
+                    style={{ fontWeight: 600 }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.8" />
+                      <path d="M8 15.5c1.6 1.4 3.3 2.1 5.2 2.1 2.2 0 4.2-1.1 5.3-3.2M8 15.5V8.8c0-1.4 1.1-2.5 2.5-2.5H15" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Pay with Razorpay
                   </button>
                 </div>
               </div>

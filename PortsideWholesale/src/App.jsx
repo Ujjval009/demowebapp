@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -60,6 +60,18 @@ export default function App() {
   const [cart, setCart] = useState([]); // {id, qty}
   const [query, setQuery] = useState("");
   const [confirmMsg, setConfirmMsg] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      script.remove();
+    };
+  }, []);
 
   const lowStock = useMemo(() => products.filter((p) => p.stock <= p.reorder), [products]);
   const inventoryValue = useMemo(() => products.reduce((s, p) => s + p.stock * p.price, 0), [products]);
@@ -107,23 +119,73 @@ export default function App() {
 
   function completeSale() {
     if (cartLines.length === 0) return;
-    setProducts((prev) =>
-      prev.map((p) => {
-        const line = cartLines.find((l) => l.id === p.id);
-        return line ? { ...p, stock: p.stock - line.qty } : p;
-      })
-    );
-    const newSale = {
-      id: "S-" + (1043 + sales.length - 5),
-      when: "Just now",
-      customer: "Walk-in counter sale",
-      items: cartLines.reduce((s, l) => s + l.qty, 0),
-      total: cartTotal,
+
+    const finalizeSale = () => {
+      setProducts((prev) =>
+        prev.map((p) => {
+          const line = cartLines.find((l) => l.id === p.id);
+          return line ? { ...p, stock: p.stock - line.qty } : p;
+        })
+      );
+
+      const newSale = {
+        id: "S-" + (1043 + sales.length - 5),
+        when: "Just now",
+        customer: "Walk-in counter sale",
+        items: cartLines.reduce((s, l) => s + l.qty, 0),
+        total: cartTotal,
+      };
+
+      setSales((prev) => [newSale, ...prev]);
+      setCart([]);
+      setConfirmMsg(`Sale ${newSale.id} recorded — ${rupees(cartTotal)}`);
+      setTimeout(() => setConfirmMsg(""), 3000);
     };
-    setSales((prev) => [newSale, ...prev]);
-    setCart([]);
-    setConfirmMsg(`Sale ${newSale.id} recorded — ${rupees(cartTotal)}`);
-    setTimeout(() => setConfirmMsg(""), 3000);
+
+    if (paymentMethod === "razorpay") {
+      const amountInPaise = Math.round(cartTotal * 100);
+
+      if (!window.Razorpay) {
+        setConfirmMsg("Razorpay SDK not loaded yet. Please refresh and try again.");
+        return;
+      }
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: amountInPaise,
+        currency: "INR",
+        name: "Portside Wholesale",
+        description: "Wholesale payment",
+        handler: function (response) {
+          const paymentMessage = response?.razorpay_payment_id
+            ? `Razorpay payment successful — ${rupees(cartTotal)}`
+            : `Payment completed — ${rupees(cartTotal)}`;
+
+          setConfirmMsg(paymentMessage);
+          finalizeSale();
+        },
+        prefill: {
+          name: "Walk-in customer",
+          email: "customer@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#111827",
+        },
+        modal: {
+          ondismiss: function () {
+            setConfirmMsg("Payment cancelled. Please try again.");
+            setTimeout(() => setConfirmMsg(""), 2500);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+      return;
+    }
+
+    finalizeSale();
   }
 
   const filteredProducts = products.filter(
@@ -228,6 +290,8 @@ export default function App() {
               cartTotal={cartTotal}
               completeSale={completeSale}
               confirmMsg={confirmMsg}
+              paymentMethod={paymentMethod}
+              setPaymentMethod={setPaymentMethod}
             />
           )}
           {tab === "sales" && <SalesHistory sales={sales} />}
@@ -389,7 +453,20 @@ function Inventory({ products, query, setQuery }) {
   );
 }
 
-function Billing({ products, cartLines, addToCart, changeQty, removeFromCart, subtotal, tax, cartTotal, completeSale, confirmMsg }) {
+function Billing({
+  products,
+  cartLines,
+  addToCart,
+  changeQty,
+  removeFromCart,
+  subtotal,
+  tax,
+  cartTotal,
+  completeSale,
+  confirmMsg,
+  paymentMethod,
+  setPaymentMethod,
+}) {
   return (
     <div>
       <div className="mb-6">
@@ -461,6 +538,37 @@ function Billing({ products, cartLines, addToCart, changeQty, removeFromCart, su
             <div className="flex justify-between font-display text-lg pt-1.5 border-t border-stone-100 mt-1.5">
               <span>Total</span>
               <span>{rupees(cartTotal)}</span>
+            </div>
+          </div>
+
+          <div className="px-5 py-4 border-t border-stone-200">
+            <div className="text-xs text-slate-500 mb-2">Payment method</div>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("cash")}
+                className={
+                  "px-3 py-2 text-sm border " +
+                  (paymentMethod === "cash"
+                    ? "bg-slate-900 text-white border-slate-900"
+                    : "bg-white border-stone-200 text-slate-700")
+                }
+              >
+                Cash
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("razorpay")}
+                className={
+                  "px-3 py-2 text-sm border " +
+                  (paymentMethod === "razorpay"
+                    ? "bg-amber-500 text-slate-900 border-amber-500"
+                    : "bg-white border-stone-200 text-slate-700")
+                }
+              >
+                Razorpay
+              </button>
             </div>
           </div>
 

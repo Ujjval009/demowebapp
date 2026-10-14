@@ -9,11 +9,101 @@
     payment:null,
   };
 
+  // Razorpay Configuration
+  const RazorpayConfig = {
+    keyId: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_RAZORPAY_KEY_ID) || "",
+    currency: "INR",
+    companyName: "Fernway Supply Co.",
+    themeColor: "#2F7A6D",
+    createOrderOnBackend: false,
+  };
+
+  // Razorpay instance cache
+  let razorpayInstance = null;
+  let razorpayLoadPromise = null;
+
   const $ = (sel) => document.querySelector(sel);
   const money = (n) => "₹" + n.toLocaleString("en-IN");
 
   function productName(row){
-    return products.find(p=>p.id===row.id) || {name:"",price:0,color:"#888",ini:"?"};
+    return products.find(p=>p.id == row.id) || {name:"",price:0,color:"#888",ini:"?"};
+  }
+
+  // ---------- Razorpay Integration ----------
+  function loadRazorpayScript(){
+    if (window.Razorpay) return Promise.resolve(window.Razorpay);
+    if (razorpayLoadPromise) return razorpayLoadPromise;
+
+    razorpayLoadPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => resolve(window.Razorpay);
+      script.onerror = () => reject(new Error("Failed to load Razorpay SDK"));
+      document.head.appendChild(script);
+    });
+
+    return razorpayLoadPromise;
+  }
+
+  function initRazorpay(options){
+    return loadRazorpayScript().then(Razorpay => {
+      razorpayInstance = new Razorpay(options);
+      return razorpayInstance;
+    });
+  }
+
+  function openRazorpayCheckout(amountPaise, orderId, customerInfo){
+    return new Promise(async (resolve, reject) => {
+      try {
+        const Razorpay = await loadRazorpayScript();
+
+        const options = {
+          key: RazorpayConfig.keyId,
+          amount: amountPaise,
+          currency: RazorpayConfig.currency,
+          name: RazorpayConfig.companyName,
+          description: `Order ${orderId}`,
+          order_id: RazorpayConfig.createOrderOnBackend ? orderId : undefined,
+          handler: function(response){
+            resolve({
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+            });
+          },
+          prefill: {
+            name: customerInfo?.name || "Walk-in Customer",
+            email: customerInfo?.email || "customer@example.com",
+            contact: customerInfo?.phone || "9999999999",
+          },
+          notes: {
+            pos_receipt: orderId,
+          },
+          theme: {
+            color: RazorpayConfig.themeColor,
+          },
+          modal: {
+            ondismiss: () => reject(new Error("Payment cancelled by user")),
+            escape: true,
+            backdropclose: false,
+          },
+          retry: {
+            enabled: true,
+            max_count: 3,
+          },
+          timeout: 300, // 5 minutes
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.on("payment.failed", function(response){
+          reject(new Error(response.error?.description || "Payment failed"));
+        });
+        rzp.open();
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
 
   // ---------- Chips ----------
@@ -52,8 +142,11 @@
       const card = document.createElement("div");
       card.className = "card" + (out ? " out" : "");
       const dotClass = out ? "out-dot" : (p.stock <= 8 ? "low" : "");
+      const imgHtml = p.image
+        ? `<img class="product-img" src="${p.image}" alt="${p.name}" loading="lazy">`
+        : `<div class="swatch" style="background:${p.color}">${p.ini}</div>`;
       card.innerHTML = `
-        <div class="swatch" style="background:${p.color}">${p.ini}</div>
+        ${imgHtml}
         <div class="card-body">
           <div class="pname">${p.name}</div>
           <div class="price">${money(p.price)}</div>
@@ -109,8 +202,11 @@
         const qty = state.cart[id];
         const row = document.createElement("div");
         row.className = "line-item";
+        const imgHtml = p.image
+          ? `<img class="li-img" src="${p.image}" alt="${p.name}" loading="lazy">`
+          : `<div class="li-swatch" style="background:${p.color}">${p.ini}</div>`;
         row.innerHTML = `
-          <div class="li-swatch" style="background:${p.color}">${p.ini}</div>
+          ${imgHtml}
           <div class="li-info">
             <div class="li-name">${p.name}</div>
             <div class="li-unit">${money(p.price)} each</div>
@@ -186,49 +282,141 @@
   }
 
   // ---------- Checkout ----------
-  function completeSale(){
+  function showLoading(show, text="Processing..."){
+    const btn = $("#completeBtn");
+    if (!btn) return;
+    if (show){
+      btn.disabled = true;
+      btn.dataset.originalText = btn.innerHTML;
+      btn.innerHTML = `<span class="spinner"></span> ${text}`;
+    } else {
+      btn.disabled = false;
+      if (btn.dataset.originalText) btn.innerHTML = btn.dataset.originalText;
+    }
+  }
+
+  function showError(message){
+    const errorEl = document.getElementById("posError");
+    if (errorEl){
+      errorEl.textContent = message;
+      errorEl.classList.add("show");
+      setTimeout(()=> errorEl.classList.remove("show"), 4000);
+    } else {
+      alert(message);
+    }
+  }
+
+  async function completeSale(){
     const ids = Object.keys(state.cart);
     if (ids.length === 0) return;
+
     const t = cartTotals();
     const method = state.payment || "cash";
     const methodLabel = (paymentMethods.find(m=>m.id===method)||{}).label || "Cash";
 
+    // If Razorpay selected, initiate payment flow
+    if (method === "razorpay"){
+      await processRazorpayPayment(t, methodLabel);
+      return;
+    }
+
+    // Standard payment flow (cash, card, upi, split)
+    finalizeSale(t, method, methodLabel);
+  }
+
+  async function processRazorpayPayment(totals, methodLabel){
+    const receiptNo = "R-" + AppData.bumpReceipt();
+    const amountPaise = totals.total * 100; // Convert to paise
+
+    // Prepare customer info for prefill
+    const customerInfo = state.customer ? {
+      name: state.customer.name,
+      phone: state.customer.phone,
+      email: state.customer.email || "customer@example.com",
+    } : {
+      name: "Walk-in Customer",
+      phone: "9999999999",
+      email: "walkin@example.com",
+    };
+
+    showLoading(true, "Opening payment...");
+
+    try {
+      const paymentResponse = await openRazorpayCheckout(amountPaise, receiptNo, customerInfo);
+
+      // Payment successful - finalize sale with payment details
+      finalizeSale(totals, "razorpay", methodLabel, paymentResponse);
+      showToast("Payment Successful", `${receiptNo} · ${money(totals.total)} · Razorpay`);
+
+    } catch (err) {
+      showLoading(false);
+      if (err.message.includes("cancelled")){
+        showToast("Payment Cancelled", "You can try again or choose another payment method");
+      } else {
+        showError(err.message || "Payment failed. Please try again.");
+        console.error("Razorpay error:", err);
+      }
+    }
+  }
+
+  function finalizeSale(totals, method, methodLabel, paymentDetails = null){
     const receiptNo = "R-" + AppData.bumpReceipt();
     const now = new Date();
     const pad = n => String(n).padStart(2,"0");
     const dateStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
-    const items = ids.map(id=>{
+    const items = Object.keys(state.cart).map(id=>{
       const p = productName({id});
       return { name: p.name, price: p.price, qty: state.cart[id] };
     });
 
-    sales.unshift({
-      id: receiptNo, date: dateStr,
+    const saleRecord = {
+      id: receiptNo,
+      date: dateStr,
       customer: state.customer ? state.customer.name : "Walk-in",
-      items, subtotal: t.subtotal, tax: t.tax, total: t.total,
-      method
-    });
+      items,
+      subtotal: totals.subtotal,
+      tax: totals.tax,
+      total: totals.total,
+      method,
+    };
 
-    showToast(`Sale complete`, `${receiptNo} · ${money(t.total)} · ${methodLabel}`);
-
-    ids.forEach(id=>{
-      const p = products.find(x=>x.id==id);
-      p.stock = Math.max(0, p.stock - state.cart[id]);
-    });
-
-    if (state.customer){
-      const c = customers.find(x=>x.name === state.customer.name);
-      if (c){ c.totalSpent += t.total; c.visits += 1; }
+    // Add Razorpay payment details if available
+    if (paymentDetails){
+      saleRecord.paymentId = paymentDetails.paymentId;
+      saleRecord.orderId = paymentDetails.orderId;
+      saleRecord.signature = paymentDetails.signature;
     }
 
+    sales.unshift(saleRecord);
+
+    // Update inventory
+    Object.keys(state.cart).forEach(id=>{
+      const p = products.find(x=>x.id==id);
+      if (p) p.stock = Math.max(0, p.stock - state.cart[id]);
+    });
+
+    // Update customer stats
+    if (state.customer){
+      const c = customers.find(x=>x.name === state.customer.name);
+      if (c){ c.totalSpent += totals.total; c.visits += 1; }
+    }
+
+    // Reset state
     state.cart = {};
     state.customer = null;
     state.payment = null;
+
+    // Re-render
     renderGrid();
     renderCart();
     renderCustomer();
     renderPay();
+    showLoading(false);
+
+    // Update history badge
+    const badge = document.getElementById("historyBadge");
+    if (badge) badge.textContent = sales.length > 9 ? "9+" : sales.length;
   }
 
   // ---------- Toast ----------
@@ -240,7 +428,7 @@
     if (subEl) subEl.textContent = sub;
     toast.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=> toast.classList.remove("show"), 2600);
+    toastTimer = setTimeout(()=> toast.classList.remove("show"), 3000);
   }
 
   // ---------- Wire up (only if POS view present) ----------

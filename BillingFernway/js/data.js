@@ -1,16 +1,16 @@
 window.AppData = (function(){
 
   const products = [
-    { id:1, name:"Premium Oversized Tee",   sku:"AP-1001", price:999,  stock:45, cat:"Apparel",     color:"#7C6A55", ini:"OT" },
-    { id:2, name:"Classic Denim Jacket",     sku:"AP-1002", price:2499, stock:12, cat:"Apparel",     color:"#3C4E63", ini:"DJ" },
-    { id:3, name:"Urban Cargo Pants",        sku:"AP-1003", price:1499, stock:24, cat:"Apparel",     color:"#4F5B4D", ini:"CP" },
-    { id:4, name:"Ribbed Knit Sweater",      sku:"AP-1004", price:1899, stock:6,  cat:"Apparel",     color:"#6E4A44", ini:"KS" },
-    { id:5, name:"Court Sneakers",           sku:"FW-2001", price:3299, stock:9,  cat:"Footwear",    color:"#8A5A2E", ini:"CS" },
-    { id:6, name:"Canvas High-Tops",         sku:"FW-2002", price:2199, stock:0,  cat:"Footwear",    color:"#5B4636", ini:"HT" },
-    { id:7, name:"Leather Belt",             sku:"AC-3001", price:799,  stock:31, cat:"Accessories", color:"#4A3B2C", ini:"LB" },
-    { id:8, name:"Wool Beanie",              sku:"AC-3002", price:499,  stock:18, cat:"Accessories", color:"#5D4A66", ini:"WB" },
-    { id:9, name:"Structured Cap",           sku:"AC-3003", price:699,  stock:22, cat:"Accessories", color:"#2E5C55", ini:"SC" },
-    { id:10, name:"Crossbody Bag",           sku:"AC-3004", price:1799, stock:4,  cat:"Accessories", color:"#6B3F4C", ini:"CB" },
+    { id:1, name:"Premium Oversized Tee",   sku:"AP-1001", price:999,  stock:45, cat:"Apparel",     image:"/BillingFernway/image/teeoversized.jpeg", color:"#7C6A55", ini:"OT" },
+    { id:2, name:"Classic Denim Jacket",     sku:"AP-1002", price:2499, stock:12, cat:"Apparel",     image:"/BillingFernway/image/denimejacket.jpeg", color:"#3C4E63", ini:"DJ" },
+    { id:3, name:"Urban Cargo Pants",        sku:"AP-1003", price:1499, stock:24, cat:"Apparel",     image:"/BillingFernway/image/cargo.jpeg", color:"#4F5B4D", ini:"CP" },
+    { id:4, name:"Ribbed Knit Sweater",      sku:"AP-1004", price:1899, stock:6,  cat:"Apparel",     image:"/BillingFernway/image/sweater.jpeg", color:"#6E4A44", ini:"KS" },
+    { id:5, name:"Court Sneakers",           sku:"FW-2001", price:3299, stock:9,  cat:"Footwear",    image:"/BillingFernway/image/sneaker.jpeg", color:"#8A5A2E", ini:"CS" },
+    { id:6, name:"Canvas High-Tops",         sku:"FW-2002", price:2199, stock:0,  cat:"Footwear",    image:"/BillingFernway/image/converse.jpeg", color:"#5B4636", ini:"HT" },
+    { id:7, name:"Leather Belt",             sku:"AC-3001", price:799,  stock:31, cat:"Accessories", image:"/BillingFernway/image/belt.jpeg", color:"#4A3B2C", ini:"LB" },
+    { id:8, name:"Wool Beanie",              sku:"AC-3002", price:499,  stock:18, cat:"Accessories", image:"/BillingFernway/image/beene.jpeg", color:"#5D4A66", ini:"WB" },
+    { id:9, name:"Structured Cap",           sku:"AC-3003", price:699,  stock:22, cat:"Accessories", image:"/BillingFernway/image/cap.jpeg", color:"#2E5C55", ini:"SC" },
+    { id:10, name:"Crossbody Bag",           sku:"AC-3004", price:1799, stock:4,  cat:"Accessories", image:"/BillingFernway/image/bag.jpeg", color:"#6B3F4C", ini:"CB" },
   ];
 
   const categories = ["All","Apparel","Footwear","Accessories"];
@@ -19,6 +19,7 @@ window.AppData = (function(){
     { id:"cash", label:"Cash", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>' },
     { id:"card", label:"Card", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>' },
     { id:"upi",  label:"GPay/UPI", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/></svg>' },
+    { id:"razorpay", label:"Razorpay", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>' },
     { id:"split",label:"Split", icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>' },
   ];
 
