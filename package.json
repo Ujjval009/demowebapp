@@ -1,1 +1,15 @@
-{"name":"mooncake-multistore","version":"1.0.0","private":true,"scripts":{"vercel-build":"echo 'ok'"},"type":"module"}
+{
+  "name": "demowebapp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node build-all.js",
+    "build:billing": "cd BillingFernway && npm run build",
+    "build:portside": "cd PortsideWholesale && npm run build",
+    "build:rag": "cd RAGSYSTEM && npm run build",
+    "build:hms": "cd HMS/wardline && npm run build",
+    "build:toystore": "cd toystorePOS/toystore-billing && npm run build",
+    "dev": "python3 -m http.server 8080"
+  },
+  "devDependencies": {}
+}

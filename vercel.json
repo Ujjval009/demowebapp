@@ -1,13 +1,68 @@
 {
-  "projects": [
+  "buildCommand": "node build-all.js",
+  "devCommand": "python3 -m http.server 8080",
+  "installCommand": "npm install",
+  "outputDirectory": ".",
+  "framework": "static",
+  "rewrites": [
     {
-      "name": "billing-fernway",
-      "rootDirectory": "BillingFernway",
-      "framework": "static",
-      "buildCommand": "npm run build",
-      "devCommand": "python3 -m http.server 8080",
-      "installCommand": "npm install",
-      "outputDirectory": "."
+      "source": "/BillingFernway/(.*)",
+      "destination": "/BillingFernway/$1"
+    },
+    {
+      "source": "/PortsideWholesale/(.*)",
+      "destination": "/PortsideWholesale/dist/$1"
+    },
+    {
+      "source": "/RAGSYSTEM/(.*)",
+      "destination": "/RAGSYSTEM/dist/$1"
+    },
+    {
+      "source": "/toystorePOS/(.*)",
+      "destination": "/toystorePOS/toystore-billing/dist/$1"
+    },
+    {
+      "source": "/HMS/(.*)",
+      "destination": "/HMS/wardline/dist/$1"
+    },
+    {
+      "source": "/CrumbCo/(.*)",
+      "destination": "/CrumbCo/$1"
+    },
+    {
+      "source": "/Fieldline/(.*)",
+      "destination": "/Fieldline/$1"
+    },
+    {
+      "source": "/MeridianClinic/(.*)",
+      "destination": "/MeridianClinic/$1"
+    },
+    {
+      "source": "/Smartinventorydashboard/(.*)",
+      "destination": "/Smartinventorydashboard/$1"
+    },
+    {
+      "source": "/AIStudyAssistant/(.*)",
+      "destination": "/AIStudyAssistant/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
     }
   ]
 }
