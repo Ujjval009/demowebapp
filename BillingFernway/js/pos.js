@@ -58,6 +58,12 @@
       try {
         const Razorpay = await loadRazorpayScript();
 
+        // Validate key
+        if (!RazorpayConfig.keyId || RazorpayConfig.keyId.includes("YOUR_KEY")) {
+          reject(new Error("Razorpay key not configured. Please add your test key to js/config.js"));
+          return;
+        }
+
         const options = {
           key: RazorpayConfig.keyId,
           amount: amountPaise,
