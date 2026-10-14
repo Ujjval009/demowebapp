@@ -11,7 +11,7 @@
 
   // Razorpay Configuration
   const RazorpayConfig = {
-    keyId: (typeof import.meta !== 'undefined' && import.meta.env?.VITE_RAZORPAY_KEY_ID) || "",
+    keyId: (window.RAZORPAY_KEY_ID || ""),
     currency: "INR",
     companyName: "Fernway Supply Co.",
     themeColor: "#2F7A6D",
