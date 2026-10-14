@@ -3,8 +3,7 @@
   "devCommand": "python3 -m http.server 8080",
   "installCommand": "npm install",
   "outputDirectory": ".",
-  "framework": "static",
-  "rewrites": [
+  "rewrites": [ 
     {
       "source": "/BillingFernway/(.*)",
       "destination": "/BillingFernway/$1"
