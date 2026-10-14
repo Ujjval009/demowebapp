@@ -1,1 +1,13 @@
-{"outputDirectory":".","builds":[],"routes":[{"src":"/(.*)","dest":"$1"}],"cleanUrls":true}
+{
+  "projects": [
+    {
+      "name": "billing-fernway",
+      "rootDirectory": "BillingFernway",
+      "framework": "static",
+      "buildCommand": "npm run build",
+      "devCommand": "python3 -m http.server 8080",
+      "installCommand": "npm install",
+      "outputDirectory": "."
+    }
+  ]
+}
