@@ -28,6 +28,13 @@ projects.forEach(proj => {
   }
   
   try {
+    console.log(`📦 Installing dependencies for ${proj.name}...`);
+    execSync(`npm install`, { 
+      cwd: projectPath, 
+      stdio: 'inherit',
+      env: { ...process.env, FORCE_COLOR: '1' }
+    });
+    
     console.log(`🔨 Building ${proj.name}...`);
     execSync(`npm run ${proj.buildScript}`, { 
       cwd: projectPath, 
